@@ -498,7 +498,9 @@ def diff_flights(current_flights, notified, blocked_dates=None):
     """对比本次结果与上次记录，给每个航班打变化标签
     返回 (带标签的航班列表, 变化统计dict, 消失航班列表)
     blocked_dates: 本次因风控未查询的日期列表，这些日期的 notified 记录
-    不参与消失判断，避免误判"""
+    不参与消失判断，避免误判
+    消失判定：连续 2 次运行都未出现（miss_count >= 2）才加入 gone，
+    单次未出现只递增 miss_count，避免飞猪价格波动导致误报"""
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     stats = {"new": 0, "cheaper": 0, "higher": 0, "unchanged": 0}
     gone = []
@@ -527,22 +529,28 @@ def diff_flights(current_flights, notified, blocked_dates=None):
                 f["change"] = "unchanged"
                 stats["unchanged"] += 1
 
-    # 找出消失的航班（上次有，本次无）
-    # 跳过 blocked_dates 中的记录：这些日期本次未查询，不能判定为消失
+    # 找出不再符合条件的记录（上次有，本次无）
+    # 跳过 blocked_dates：这些日期本次未查询，不能判定为消失
+    # 递增 miss_count，只有连续 2 次未出现才加入 gone
     for key, prev in notified.items():
         if key in current_keys:
             continue
         prev_dep_date = prev.get("dep_date", "")
         if prev_dep_date in blocked_set:
             continue
-        gone.append({"key": key, "price": prev.get("price", 0),
-                     "last_notified": prev.get("last_notified", "")})
+        miss_count = prev.get("miss_count", 0) + 1
+        prev["miss_count"] = miss_count
+        if miss_count >= 2:
+            gone.append({"key": key, "price": prev.get("price", 0),
+                         "last_notified": prev.get("last_notified", "")})
 
     return current_flights, stats, gone
 
 
 def update_notified(notified, flights, now_str):
-    """用本次结果更新 notified 记录"""
+    """用本次结果更新 notified 记录
+    本次出现的航班重置 miss_count=0
+    未出现的保留 diff_flights 中已递增的 miss_count"""
     for f in flights:
         key = f["dedupe_key"]
         prev = notified.get(key, {})
@@ -552,6 +560,7 @@ def update_notified(notified, flights, now_str):
             "last_notified": now_str,
             "seat_category": f["seat_category"],
             "dep_date": f["dep_date"],
+            "miss_count": 0,
         }
 
 
@@ -626,7 +635,7 @@ def format_run_message(all_flights, stats, gone, cfg, blocked_dates):
         "### 📊 本次总结",
         f"- **查询范围**: {cfg['date_start']} ~ {cfg['date_end']} ({len(generate_dates(cfg['date_start'], cfg['date_end']))}天)",
         f"- **命中航班**: 公务舱 {len(business)} 条 / 经济舱 {len(economy)} 条",
-        f"- **变化对比**: 🆕新增 {stats['new']} · ⬇降价 {stats['cheaper']} · ⬆涨价 {stats['higher']} · —不变 {stats['unchanged']} · ❌消失 {len(gone)}",
+        f"- **变化对比**: 🆕新增 {stats['new']} · ⬇降价 {stats['cheaper']} · ⬆涨价 {stats['higher']} · —不变 {stats['unchanged']} · ❌不再符合 {len(gone)}",
     ]
 
     # 降价提醒（合并到总结，不单独推送）
@@ -706,7 +715,7 @@ def format_run_message(all_flights, stats, gone, cfg, blocked_dates):
         lines.append("")
 
     if gone:
-        lines.append("### ❌ 已消失航班（上次有本次无，可能售罄或查询失败）")
+        lines.append("### ❌ 不再符合条件航班（连续2次未出现，可能涨价超阈值或停售）")
         for g in gone[:10]:
             lines.append(f"- {g['key']} ¥{g['price']:.0f}")
         if len(gone) > 10:
@@ -786,7 +795,7 @@ def generate_html(all_flights, stats, gone, cfg, blocked_dates):
             f"<li>{html.escape(g['key'])} ¥{g['price']:.0f} <span class='muted'>({g.get('last_notified','')})</span></li>"
             for g in gone
         )
-        gone_html = f"<div class='gone'><h3>❌ 已消失航班（{len(gone)}）</h3><ul>{gone_rows}</ul></div>"
+        gone_html = f"<div class='gone'><h3>❌ 不再符合条件航班（{len(gone)}）</h3><ul>{gone_rows}</ul></div>"
 
     blocked_html = ""
     if blocked_dates:
@@ -873,7 +882,7 @@ a:hover{{text-decoration:underline}}
 <span class="stat" style="background:#e6f0ff">⬇降价 {stats['cheaper']}</span>
 <span class="stat" style="background:#fff0e6">⬆涨价 {stats['higher']}</span>
 <span class="stat" style="background:#f0f0f0">—不变 {stats['unchanged']}</span>
-<span class="stat" style="background:#fff5f5">❌消失 {len(gone)}</span>
+<span class="stat" style="background:#fff5f5">❌不再符合 {len(gone)}</span>
 </div>
 </div>
 {recommend_html}
@@ -954,7 +963,7 @@ def main():
     notified = load_notified()
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     all_flights, stats, gone = diff_flights(all_flights, notified, blocked_dates)
-    log.info("变化: 新增%d 降价%d 涨价%d 不变%d 消失%d",
+    log.info("变化: 新增%d 降价%d 涨价%d 不变%d 不再符合%d",
              stats["new"], stats["cheaper"], stats["higher"], stats["unchanged"], len(gone))
 
     # 始终更新本地看板
@@ -972,7 +981,7 @@ def main():
         if send_serverchan(cfg["serverchan_key"], title, desp):
             record_push(push_history)
             pushed = True
-            log.info("已推送本次运行结果 (命中%d条, 消失%d条)", len(all_flights), len(gone))
+            log.info("已推送本次运行结果 (命中%d条, 不再符合%d条)", len(all_flights), len(gone))
         else:
             log.warning("推送失败")
     else:
