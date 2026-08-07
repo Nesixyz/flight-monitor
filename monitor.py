@@ -755,7 +755,7 @@ def generate_html(all_flights, stats, gone, cfg, blocked_dates):
             type_label = "直飞" if f["is_direct"] else f"中转{f['transfer_count']}次"
             dep_t = f["dep_time"][11:16] if len(f["dep_time"]) >= 16 else ""
             arr_t = f["arr_time"][11:16] if len(f["arr_time"]) >= 16 else ""
-            url = html.escape(f["jump_url"])
+            url = html.escape(_extract_jump_url(f["jump_url"]))
             # 路线单元格：第一行城市链，下面每行一个中转点
             route_lines = [f'<b>{html.escape(f["route"])}</b>']
             for t in f["transfers"]:
