@@ -9,6 +9,10 @@ on:
         description: '手动触发立即执行（跳过时段检查）'
         required: false
         default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
 
 permissions:
   contents: write
@@ -44,7 +48,7 @@ jobs:
 
       - name: 运行监控
         env:
-          MANUAL_RUN: ${{ github.event.inputs.manual_run }}
+          MANUAL_RUN: ${{ github.event.inputs.manual_run == 'true' && '1' || '0' }}
         run: python3 monitor.py
 
       - name: 提交状态文件回主分支
@@ -59,9 +63,14 @@ jobs:
             git push
           fi
 
+      - name: 准备看板部署目录
+        run: |
+          mkdir -p public
+          cp dashboard.html public/index.html
+
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dashboard.html
+          path: public
 
   deploy-pages:
     needs: monitor
