@@ -4,1296 +4,1515 @@
     "first_seen": "2026-07-31 17:25:35",
     "last_notified": "2026-08-07 14:50:38",
     "seat_category": "business",
-    "dep_date": "2026-09-20"
+    "dep_date": "2026-09-20",
+    "miss_count": 1
   },
   "business|印度航空AI351 > 印度航空AI147|2026-09-20": {
     "price": 11365.0,
     "first_seen": "2026-07-31 17:25:35",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "business",
-    "dep_date": "2026-09-20"
+    "dep_date": "2026-09-20",
+    "miss_count": 0
   },
   "business|印度航空AI351 > 印度航空AI143|2026-09-20": {
     "price": 11365.0,
     "first_seen": "2026-07-31 17:25:35",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "business",
-    "dep_date": "2026-09-20"
+    "dep_date": "2026-09-20",
+    "miss_count": 0
   },
   "economy|印度航空AI351 > 印度航空AI147|2026-09-20": {
-    "price": 2834.0,
+    "price": 2832.0,
     "first_seen": "2026-07-31 17:25:35",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-20"
+    "dep_date": "2026-09-20",
+    "miss_count": 0
   },
   "economy|印度航空AI351 > 印度航空AI143|2026-09-20": {
-    "price": 2834.0,
+    "price": 2824.0,
     "first_seen": "2026-07-31 17:25:35",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-20"
+    "dep_date": "2026-09-20",
+    "miss_count": 0
   },
   "economy|吉祥HO1657 > 爱琴海航空A3616|2026-09-20": {
     "price": 2933.0,
     "first_seen": "2026-07-31 17:25:35",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-20"
+    "dep_date": "2026-09-20",
+    "miss_count": 1
   },
   "economy|吉祥HO1657 > 爱琴海航空A3614|2026-09-20": {
     "price": 2932.0,
     "first_seen": "2026-07-31 17:25:35",
-    "last_notified": "2026-07-31 17:25:35"
+    "last_notified": "2026-07-31 17:25:35",
+    "miss_count": 1
   },
   "economy|吉祥HO1657 > 爱琴海航空A3610|2026-09-20": {
     "price": 2932.0,
     "first_seen": "2026-07-31 17:25:35",
-    "last_notified": "2026-07-31 17:25:35"
+    "last_notified": "2026-07-31 17:25:35",
+    "miss_count": 1
   },
   "economy|厦航MF8510 > 厦航MF825|2026-09-20": {
     "price": 3717.0,
     "first_seen": "2026-07-31 17:25:35",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-09-20"
+    "dep_date": "2026-09-20",
+    "miss_count": 1
   },
   "economy|厦航MF8568 > 厦航MF825|2026-09-20": {
     "price": 3717.0,
     "first_seen": "2026-07-31 17:25:35",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-09-20"
+    "dep_date": "2026-09-20",
+    "miss_count": 1
   },
   "economy|厦航MF8512 > 厦航MF825|2026-09-20": {
     "price": 2927.0,
     "first_seen": "2026-07-31 17:25:35",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-20"
+    "dep_date": "2026-09-20",
+    "miss_count": 1
   },
   "economy|厦航MF8502 > 厦航MF825|2026-09-20": {
     "price": 2927.0,
     "first_seen": "2026-07-31 17:25:35",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-20"
+    "dep_date": "2026-09-20",
+    "miss_count": 1
   },
   "business|印度航空AI351 > 印度航空AI147|2026-09-26": {
     "price": 11365.0,
     "first_seen": "2026-08-01 03:21:11",
     "last_notified": "2026-08-06 00:08:59",
     "seat_category": "business",
-    "dep_date": "2026-09-26"
+    "dep_date": "2026-09-26",
+    "miss_count": 1
   },
   "business|印度航空AI351 > 印度航空AI143|2026-09-26": {
     "price": 11365.0,
     "first_seen": "2026-08-01 03:21:11",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "business",
-    "dep_date": "2026-09-26"
+    "dep_date": "2026-09-26",
+    "miss_count": 0
   },
   "business|印度航空AI351 > 印度航空AI147|2026-09-27": {
     "price": 11365.0,
     "first_seen": "2026-08-01 03:21:11",
     "last_notified": "2026-08-06 00:08:59",
     "seat_category": "business",
-    "dep_date": "2026-09-27"
+    "dep_date": "2026-09-27",
+    "miss_count": 1
   },
   "business|印度航空AI351 > 印度航空AI143|2026-09-27": {
     "price": 11365.0,
     "first_seen": "2026-08-01 03:21:11",
     "last_notified": "2026-08-06 00:08:59",
     "seat_category": "business",
-    "dep_date": "2026-09-27"
+    "dep_date": "2026-09-27",
+    "miss_count": 1
   },
   "economy|印度航空AI351 > 印度航空AI147|2026-09-27": {
     "price": 3504.0,
     "first_seen": "2026-08-01 03:21:11",
     "last_notified": "2026-08-06 00:08:59",
     "seat_category": "economy",
-    "dep_date": "2026-09-27"
+    "dep_date": "2026-09-27",
+    "miss_count": 1
   },
   "economy|长荣航空BR711 > 长荣航空BR087|2026-09-27": {
     "price": 3568.0,
     "first_seen": "2026-08-01 03:21:11",
-    "last_notified": "2026-08-01 03:21:11"
+    "last_notified": "2026-08-01 03:21:11",
+    "miss_count": 1
   },
   "economy|印度航空AI351 > 印度航空AI143|2026-09-27": {
     "price": 3126.0,
     "first_seen": "2026-08-01 03:21:11",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-27"
+    "dep_date": "2026-09-27",
+    "miss_count": 0
   },
   "economy|越南航空VN533 > 越南航空VN019|2026-09-27": {
     "price": 3089.0,
     "first_seen": "2026-08-01 03:21:11",
     "last_notified": "2026-08-05 18:08:33",
     "seat_category": "economy",
-    "dep_date": "2026-09-27"
+    "dep_date": "2026-09-27",
+    "miss_count": 1
   },
   "economy|厦航MF8512 > 厦航MF825|2026-09-27": {
     "price": 3747.0,
     "first_seen": "2026-08-01 03:21:11",
-    "last_notified": "2026-08-01 03:21:11"
+    "last_notified": "2026-08-01 03:21:11",
+    "miss_count": 1
   },
   "economy|厦航MF8502 > 厦航MF825|2026-09-27": {
     "price": 3747.0,
     "first_seen": "2026-08-01 03:21:11",
-    "last_notified": "2026-08-01 03:21:11"
+    "last_notified": "2026-08-01 03:21:11",
+    "miss_count": 1
   },
   "economy|厦航MF8518 > 厦航MF825|2026-09-27": {
     "price": 3747.0,
     "first_seen": "2026-08-01 03:21:11",
-    "last_notified": "2026-08-01 03:21:11"
+    "last_notified": "2026-08-01 03:21:11",
+    "miss_count": 1
   },
   "economy|厦航MF8568 > 厦航MF825|2026-09-27": {
     "price": 3747.0,
     "first_seen": "2026-08-01 03:21:11",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-27"
+    "dep_date": "2026-09-27",
+    "miss_count": 1
   },
   "economy|越南航空VN533 > 越南航空VN019|2026-09-28": {
     "price": 3089.0,
     "first_seen": "2026-08-01 06:28:21",
     "last_notified": "2026-08-06 00:08:59",
     "seat_category": "economy",
-    "dep_date": "2026-09-28"
+    "dep_date": "2026-09-28",
+    "miss_count": 1
   },
   "economy|海湾航空GF125 > 海湾航空GF019|2026-09-28": {
     "price": 3563.0,
     "first_seen": "2026-08-01 06:28:21",
     "last_notified": "2026-08-07 14:50:38",
     "seat_category": "economy",
-    "dep_date": "2026-09-28"
+    "dep_date": "2026-09-28",
+    "miss_count": 1
   },
   "economy|吉祥HO1657 > 爱琴海航空A3616|2026-09-28": {
     "price": 3543.0,
     "first_seen": "2026-08-01 06:28:21",
     "last_notified": "2026-08-04 12:43:56",
     "seat_category": "economy",
-    "dep_date": "2026-09-28"
+    "dep_date": "2026-09-28",
+    "miss_count": 1
   },
   "economy|长荣航空BR721 > 长荣航空BR087|2026-09-29": {
     "price": 3616.0,
     "first_seen": "2026-08-01 06:28:21",
     "last_notified": "2026-08-04 12:43:56",
     "seat_category": "economy",
-    "dep_date": "2026-09-29"
+    "dep_date": "2026-09-29",
+    "miss_count": 1
   },
   "economy|长荣航空BR711 > 长荣航空BR087|2026-09-29": {
     "price": 3597.0,
     "first_seen": "2026-08-01 06:28:21",
     "last_notified": "2026-08-04 12:43:56",
     "seat_category": "economy",
-    "dep_date": "2026-09-29"
+    "dep_date": "2026-09-29",
+    "miss_count": 1
   },
   "economy|印度航空AI351 > 印度航空AI147|2026-09-29": {
     "price": 3445.0,
     "first_seen": "2026-08-01 06:28:21",
     "last_notified": "2026-08-04 12:43:56",
     "seat_category": "economy",
-    "dep_date": "2026-09-29"
+    "dep_date": "2026-09-29",
+    "miss_count": 1
   },
   "economy|印度航空AI351 > 印度航空AI143|2026-09-29": {
     "price": 3121.0,
     "first_seen": "2026-08-01 06:28:21",
     "last_notified": "2026-08-07 11:51:51",
     "seat_category": "economy",
-    "dep_date": "2026-09-29"
+    "dep_date": "2026-09-29",
+    "miss_count": 1
   },
   "economy|越南航空VN533 > 越南航空VN019|2026-09-30": {
     "price": 3609.0,
     "first_seen": "2026-08-01 11:21:15",
     "last_notified": "2026-08-05 00:08:40",
     "seat_category": "economy",
-    "dep_date": "2026-09-30"
+    "dep_date": "2026-09-30",
+    "miss_count": 1
   },
   "economy|吉祥HO1657 > 爱琴海航空A3616|2026-09-30": {
     "price": 4203.0,
     "first_seen": "2026-08-01 11:21:15",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-30"
+    "dep_date": "2026-09-30",
+    "miss_count": 0
   },
   "economy|泰国国际航空TG665 > 泰国国际航空TG930|2026-09-30": {
     "price": 4553.0,
     "first_seen": "2026-08-01 11:21:15",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-30"
+    "dep_date": "2026-09-30",
+    "miss_count": 1
   },
   "economy|新海航|海南航空HU7842 > 新海航|海南航空HU7907|2026-09-30": {
     "price": 4749.0,
     "first_seen": "2026-08-01 11:21:15",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-30"
+    "dep_date": "2026-09-30",
+    "miss_count": 1
   },
   "economy|新海航|海南航空HU7844 > 新海航|海南航空HU7907|2026-09-30": {
     "price": 4749.0,
     "first_seen": "2026-08-01 11:21:15",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-30"
+    "dep_date": "2026-09-30",
+    "miss_count": 1
   },
   "economy|新海航|海南航空HU7846 > 新海航|海南航空HU7907|2026-09-30": {
     "price": 4749.0,
     "first_seen": "2026-08-01 11:21:15",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-30"
+    "dep_date": "2026-09-30",
+    "miss_count": 1
   },
   "economy|泰国国际航空TG663 > 泰国国际航空TG930|2026-09-30": {
     "price": 4775.0,
     "first_seen": "2026-08-01 11:21:15",
     "last_notified": "2026-08-07 14:50:38",
     "seat_category": "economy",
-    "dep_date": "2026-09-30"
+    "dep_date": "2026-09-30",
+    "miss_count": 1
   },
   "business|吉祥HO1659 > 布鲁塞尔航空SN3631|2026-09-16": {
     "price": 9821.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-07 14:50:38",
     "seat_category": "business",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 1
   },
   "economy|吉祥HO1659 > 布鲁塞尔航空SN3631|2026-09-16": {
     "price": 2891.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-07 14:50:38",
     "seat_category": "economy",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 1
   },
   "economy|厦航MF8510 > 厦航MF825|2026-09-16": {
     "price": 2897.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-07 14:50:38",
     "seat_category": "economy",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 1
   },
   "economy|厦航MF8522 > 厦航MF825|2026-09-16": {
     "price": 2897.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-06 00:08:59",
     "seat_category": "economy",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 1
   },
   "economy|厦航MF8568 > 厦航MF825|2026-09-16": {
     "price": 2897.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-06 00:08:59",
     "seat_category": "economy",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 1
   },
   "economy|厦航MF8502 > 厦航MF825|2026-09-16": {
     "price": 2927.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-02 12:13:55",
     "seat_category": "economy",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 1
   },
   "economy|厦航MF8512 > 厦航MF825|2026-09-16": {
     "price": 2897.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-06 00:08:59",
     "seat_category": "economy",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 1
   },
   "economy|厦航MF8518 > 厦航MF825|2026-09-16": {
     "price": 2927.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 1
   },
   "economy|吉祥HO1657 > 爱琴海航空A3616|2026-09-16": {
     "price": 2933.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-05 00:08:40",
     "seat_category": "economy",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 1
   },
   "economy|吉祥HO1657 > 爱琴海航空A3614|2026-09-16": {
     "price": 2933.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-04 18:08:50",
     "seat_category": "economy",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 1
   },
   "economy|吉祥HO1657 > 爱琴海航空A3610|2026-09-16": {
     "price": 2933.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-04 18:08:50",
     "seat_category": "economy",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 1
   },
   "business|印度航空AI351 > 印度航空AI147|2026-09-17": {
     "price": 11365.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "business",
-    "dep_date": "2026-09-17"
+    "dep_date": "2026-09-17",
+    "miss_count": 0
   },
   "business|印度航空AI351 > 印度航空AI143|2026-09-17": {
     "price": 11365.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "business",
-    "dep_date": "2026-09-17"
+    "dep_date": "2026-09-17",
+    "miss_count": 0
   },
   "economy|印度航空AI351 > 印度航空AI147|2026-09-17": {
-    "price": 2832.0,
+    "price": 2834.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-17"
+    "dep_date": "2026-09-17",
+    "miss_count": 0
   },
   "economy|印度航空AI351 > 印度航空AI143|2026-09-17": {
-    "price": 2824.0,
+    "price": 2851.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-17"
+    "dep_date": "2026-09-17",
+    "miss_count": 0
   },
   "economy|新海航|海南航空HU7726 > 新海航|海南航空HU757|2026-09-17": {
     "price": 2979.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-17"
+    "dep_date": "2026-09-17",
+    "miss_count": 0
   },
   "economy|卡塔尔航空QR869 > 卡塔尔航空QR041|2026-09-17": {
     "price": 3414.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-04 00:13:16",
     "seat_category": "economy",
-    "dep_date": "2026-09-17"
+    "dep_date": "2026-09-17",
+    "miss_count": 1
   },
   "economy|卡塔尔航空QR869 > 卡塔尔航空QR039|2026-09-17": {
     "price": 3414.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-04 00:13:16",
     "seat_category": "economy",
-    "dep_date": "2026-09-17"
+    "dep_date": "2026-09-17",
+    "miss_count": 1
   },
   "economy|卡塔尔航空QR869 > 卡塔尔航空QR037|2026-09-17": {
     "price": 3280.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-17"
+    "dep_date": "2026-09-17",
+    "miss_count": 1
   },
   "economy|埃及航空MS952 > 埃及航空MS801|2026-09-17": {
     "price": 3569.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-17"
+    "dep_date": "2026-09-17",
+    "miss_count": 1
   },
   "economy|新海航|海南航空HU7921 > 布鲁塞尔航空SN3631|2026-09-17": {
     "price": 3470.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-17"
+    "dep_date": "2026-09-17",
+    "miss_count": 1
   },
   "economy|埃及航空MS952 > 埃及航空MS799|2026-09-17": {
     "price": 3628.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-17"
+    "dep_date": "2026-09-17",
+    "miss_count": 1
   },
   "economy|卡塔尔航空QR871 > 卡塔尔航空QR037|2026-09-17": {
     "price": 3607.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-17"
+    "dep_date": "2026-09-17",
+    "miss_count": 1
   },
   "business|吉祥HO1659 > 布鲁塞尔航空SN3631|2026-09-18": {
     "price": 9821.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-07 14:50:38",
     "seat_category": "business",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 1
   },
   "business|印度航空AI351 > 印度航空AI147|2026-09-18": {
     "price": 11367.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-02 12:13:55",
     "seat_category": "business",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 1
   },
   "business|印度航空AI351 > 印度航空AI143|2026-09-18": {
     "price": 11365.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "business",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 0
   },
   "economy|印度航空AI351 > 印度航空AI147|2026-09-18": {
-    "price": 2874.0,
+    "price": 2873.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 0
   },
   "economy|印度航空AI351 > 印度航空AI143|2026-09-18": {
-    "price": 2824.0,
+    "price": 2832.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 0
   },
   "economy|厦航MF8512 > 厦航MF825|2026-09-18": {
     "price": 2897.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 1
   },
   "economy|厦航MF8502 > 厦航MF825|2026-09-18": {
     "price": 2897.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 1
   },
   "economy|厦航MF8518 > 厦航MF825|2026-09-18": {
     "price": 2897.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 1
   },
   "economy|吉祥HO1659 > 布鲁塞尔航空SN3631|2026-09-18": {
     "price": 2939.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 1
   },
   "economy|吉祥HO1659 > 布鲁塞尔航空SN3629|2026-09-18": {
     "price": 2939.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 1
   },
   "economy|印度航空AI351 > 印度航空AI147|2026-09-19": {
-    "price": 3491.0,
+    "price": 3595.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-19"
+    "dep_date": "2026-09-19",
+    "miss_count": 0
   },
   "economy|印度航空AI351 > 印度航空AI143|2026-09-19": {
-    "price": 2824.0,
+    "price": 2834.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-19"
+    "dep_date": "2026-09-19",
+    "miss_count": 0
   },
   "economy|埃及航空MS952 > 埃及航空MS801|2026-09-19": {
     "price": 4296.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-04 12:43:56",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-19"
+    "dep_date": "2026-09-19",
+    "miss_count": 0
   },
   "economy|埃及航空MS952 > 埃及航空MS799|2026-09-19": {
-    "price": 3634.0,
+    "price": 4357.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-02 12:13:55",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-19"
+    "dep_date": "2026-09-19",
+    "miss_count": 0
   },
   "economy|国航CA8332 > 国航CA933|2026-09-19": {
     "price": 3850.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-02 12:13:55",
     "seat_category": "economy",
-    "dep_date": "2026-09-19"
+    "dep_date": "2026-09-19",
+    "miss_count": 1
   },
   "economy|国航CA1590 > 国航CA933|2026-09-19": {
     "price": 3850.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-02 12:13:55",
     "seat_category": "economy",
-    "dep_date": "2026-09-19"
+    "dep_date": "2026-09-19",
+    "miss_count": 1
   },
   "economy|国航CA1564 > 国航CA933|2026-09-19": {
     "price": 3850.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-02 12:13:55",
     "seat_category": "economy",
-    "dep_date": "2026-09-19"
+    "dep_date": "2026-09-19",
+    "miss_count": 1
   },
   "economy|国航CA1566 > 国航CA933|2026-09-19": {
     "price": 3850.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-02 12:13:55",
     "seat_category": "economy",
-    "dep_date": "2026-09-19"
+    "dep_date": "2026-09-19",
+    "miss_count": 1
   },
   "economy|国航CA1510 > 国航CA933|2026-09-19": {
     "price": 3850.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-19"
+    "dep_date": "2026-09-19",
+    "miss_count": 1
   },
   "economy|国航CA1550 > 国航CA933|2026-09-19": {
     "price": 3850.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-02 12:13:55",
     "seat_category": "economy",
-    "dep_date": "2026-09-19"
+    "dep_date": "2026-09-19",
+    "miss_count": 1
   },
   "economy|厦航MF8518 > 厦航MF825|2026-09-20": {
     "price": 2927.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-20"
+    "dep_date": "2026-09-20",
+    "miss_count": 1
   },
   "economy|新海航|海南航空HU7722 > 新海航|海南航空HU757|2026-09-20": {
     "price": 2979.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-20"
+    "dep_date": "2026-09-20",
+    "miss_count": 0
   },
   "economy|新海航|海南航空HU7726 > 新海航|海南航空HU757|2026-09-20": {
     "price": 2979.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-20"
+    "dep_date": "2026-09-20",
+    "miss_count": 0
   },
   "business|印度航空AI351 > 印度航空AI147|2026-09-22": {
     "price": 11365.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "business",
-    "dep_date": "2026-09-22"
+    "dep_date": "2026-09-22",
+    "miss_count": 0
   },
   "business|印度航空AI351 > 印度航空AI143|2026-09-22": {
     "price": 11365.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "business",
-    "dep_date": "2026-09-22"
+    "dep_date": "2026-09-22",
+    "miss_count": 0
   },
   "economy|印度航空AI351 > 印度航空AI147|2026-09-22": {
-    "price": 2874.0,
+    "price": 2834.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-22"
+    "dep_date": "2026-09-22",
+    "miss_count": 0
   },
   "economy|印度航空AI351 > 印度航空AI143|2026-09-22": {
-    "price": 2824.0,
+    "price": 2834.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-22"
+    "dep_date": "2026-09-22",
+    "miss_count": 0
   },
   "economy|埃及航空MS952 > 埃及航空MS801|2026-09-22": {
     "price": 4569.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-01 12:02:28",
     "seat_category": "economy",
-    "dep_date": "2026-09-22"
+    "dep_date": "2026-09-22",
+    "miss_count": 1
   },
   "economy|埃及航空MS952 > 埃及航空MS799|2026-09-22": {
     "price": 4629.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-01 12:02:28",
     "seat_category": "economy",
-    "dep_date": "2026-09-22"
+    "dep_date": "2026-09-22",
+    "miss_count": 1
   },
   "economy|春秋9C8559 > 德威航空TW401|2026-09-22": {
     "price": 4119.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-01 12:02:28",
     "seat_category": "economy",
-    "dep_date": "2026-09-22"
+    "dep_date": "2026-09-22",
+    "miss_count": 1
   },
   "economy|吉祥HO1657 > 爱琴海航空A3614|2026-09-28": {
     "price": 3543.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-04 12:43:56",
     "seat_category": "economy",
-    "dep_date": "2026-09-28"
+    "dep_date": "2026-09-28",
+    "miss_count": 1
   },
   "economy|吉祥HO1657 > 爱琴海航空A3610|2026-09-28": {
     "price": 3543.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-04 12:43:56",
     "seat_category": "economy",
-    "dep_date": "2026-09-28"
+    "dep_date": "2026-09-28",
+    "miss_count": 1
   },
   "business|吉祥HO1659 > 布鲁塞尔航空SN3631|2026-09-30": {
     "price": 9819.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-02 12:13:55",
     "seat_category": "business",
-    "dep_date": "2026-09-30"
+    "dep_date": "2026-09-30",
+    "miss_count": 1
   },
   "business|厦航MF8510 > 厦航MF825|2026-10-02": {
     "price": 10287.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "business",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "business|厦航MF8522 > 厦航MF825|2026-10-02": {
     "price": 10287.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "business",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "business|厦航MF8568 > 厦航MF825|2026-10-02": {
     "price": 10287.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "business",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "business|厦航MF8512 > 厦航MF825|2026-10-02": {
     "price": 10287.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "business",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "business|厦航MF8502 > 厦航MF825|2026-10-02": {
     "price": 10287.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "business",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "business|厦航MF8518 > 厦航MF825|2026-10-02": {
     "price": 10287.0,
     "first_seen": "2026-08-01 12:02:28",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "business",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "business|印度航空AI351 > 印度航空AI147|2026-10-02": {
     "price": 11365.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "business",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 0
   },
   "business|印度航空AI351 > 印度航空AI143|2026-10-02": {
     "price": 11365.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "business",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 0
   },
   "economy|南航CZ3504 > 南航CZ347|2026-10-02": {
     "price": 2657.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 0
   },
   "economy|南航CZ3572 > 南航CZ347|2026-10-02": {
     "price": 2657.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 0
   },
   "economy|南航CZ3585 > 南航CZ347|2026-10-02": {
     "price": 2657.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 0
   },
   "economy|南航CZ3526 > 南航CZ347|2026-10-02": {
     "price": 2657.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 0
   },
   "economy|南航CZ3540 > 南航CZ347|2026-10-02": {
     "price": 2657.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 0
   },
   "economy|南航CZ3538 > 南航CZ347|2026-10-02": {
     "price": 2657.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 0
   },
   "economy|南航CZ3532 > 南航CZ347|2026-10-02": {
     "price": 2657.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 0
   },
   "economy|南航CZ3530 > 南航CZ347|2026-10-02": {
     "price": 2657.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 0
   },
   "economy|南航CZ3524 > 南航CZ347|2026-10-02": {
     "price": 2657.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 0
   },
   "economy|南航CZ3534 > 南航CZ347|2026-10-02": {
     "price": 2657.0,
     "first_seen": "2026-08-01 12:02:28",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 0
   },
   "economy|越南航空VN533 > 越南航空VN019|2026-09-21": {
-    "price": 3204.0,
+    "price": 3165.0,
     "first_seen": "2026-08-01 12:27:09",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-21"
+    "dep_date": "2026-09-21",
+    "miss_count": 0
   },
   "economy|新海航|海南航空HU7493 > 新海航|海南航空HU717|2026-09-21": {
     "price": 3009.0,
     "first_seen": "2026-08-01 12:27:09",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-21"
+    "dep_date": "2026-09-21",
+    "miss_count": 1
   },
   "economy|新海航|西部航空PN6374 > 新海航|海南航空HU717|2026-09-21": {
     "price": 3309.0,
     "first_seen": "2026-08-01 12:27:09",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-21"
+    "dep_date": "2026-09-21",
+    "miss_count": 1
   },
   "economy|新海航|西部航空PN6438 > 新海航|海南航空HU717|2026-09-21": {
     "price": 3309.0,
     "first_seen": "2026-08-01 12:27:09",
     "last_notified": "2026-08-01 12:27:09",
     "seat_category": "economy",
-    "dep_date": "2026-09-21"
+    "dep_date": "2026-09-21",
+    "miss_count": 1
   },
   "business|印度航空AI351 > 印度航空AI147|2026-09-29": {
     "price": 11365.0,
     "first_seen": "2026-08-01 12:27:09",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "business",
-    "dep_date": "2026-09-29"
+    "dep_date": "2026-09-29",
+    "miss_count": 0
   },
   "business|印度航空AI351 > 印度航空AI143|2026-09-29": {
     "price": 11365.0,
     "first_seen": "2026-08-01 12:27:09",
-    "last_notified": "2026-08-06 00:08:59",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "business",
-    "dep_date": "2026-09-29"
+    "dep_date": "2026-09-29",
+    "miss_count": 0
   },
   "business|吉祥HO1659 > 布鲁塞尔航空SN3631|2026-10-02": {
     "price": 9821.0,
     "first_seen": "2026-08-01 12:27:09",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "business",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 0
   },
   "economy|新海航|海南航空HU7722 > 新海航|海南航空HU757|2026-09-17": {
     "price": 2979.0,
     "first_seen": "2026-08-02 12:13:55",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-17"
+    "dep_date": "2026-09-17",
+    "miss_count": 0
   },
   "economy|新海航|海南航空HU7493 > 新海航|海南航空HU717|2026-09-18": {
     "price": 3009.0,
     "first_seen": "2026-08-02 12:13:55",
     "last_notified": "2026-08-04 12:43:56",
     "seat_category": "economy",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 1
   },
   "economy|新海航|西部航空PN6374 > 新海航|海南航空HU717|2026-09-18": {
     "price": 3309.0,
     "first_seen": "2026-08-02 12:13:55",
     "last_notified": "2026-08-02 12:13:55",
     "seat_category": "economy",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 1
   },
   "economy|新海航|西部航空PN6438 > 新海航|海南航空HU717|2026-09-18": {
     "price": 3309.0,
     "first_seen": "2026-08-02 12:13:55",
     "last_notified": "2026-08-02 12:13:55",
     "seat_category": "economy",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 1
   },
   "economy|新海航|金鹏航空Y87513 > 新海航|海南航空HU717|2026-09-18": {
     "price": 3609.0,
     "first_seen": "2026-08-02 12:13:55",
     "last_notified": "2026-08-02 12:13:55",
     "seat_category": "economy",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 1
   },
   "economy|厦航MF8522 > 厦航MF825|2026-09-18": {
     "price": 3747.0,
     "first_seen": "2026-08-02 12:13:55",
     "last_notified": "2026-08-02 12:13:55",
     "seat_category": "economy",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 1
   },
   "economy|国航CA1516 > 国航CA933|2026-09-19": {
     "price": 3850.0,
     "first_seen": "2026-08-02 12:13:55",
     "last_notified": "2026-08-02 12:13:55",
     "seat_category": "economy",
-    "dep_date": "2026-09-19"
+    "dep_date": "2026-09-19",
+    "miss_count": 1
   },
   "economy|埃及航空MS952 > 埃及航空MS801|2026-09-20": {
     "price": 4296.0,
     "first_seen": "2026-08-02 12:13:55",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-09-20"
+    "dep_date": "2026-09-20",
+    "miss_count": 1
   },
   "economy|埃及航空MS952 > 埃及航空MS799|2026-09-20": {
     "price": 4357.0,
     "first_seen": "2026-08-02 12:13:55",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-09-20"
+    "dep_date": "2026-09-20",
+    "miss_count": 1
   },
   "economy|国航CA8332 > 国航CA933|2026-09-20": {
     "price": 3850.0,
     "first_seen": "2026-08-02 12:13:55",
     "last_notified": "2026-08-02 12:13:55",
     "seat_category": "economy",
-    "dep_date": "2026-09-20"
+    "dep_date": "2026-09-20",
+    "miss_count": 1
   },
   "economy|越南航空VN525 > 越南航空VN011|2026-09-28": {
     "price": 4213.0,
     "first_seen": "2026-08-02 12:13:55",
     "last_notified": "2026-08-02 12:13:55",
     "seat_category": "economy",
-    "dep_date": "2026-09-28"
+    "dep_date": "2026-09-28",
+    "miss_count": 1
   },
   "economy|越南航空VN525 > 越南航空VN2107|2026-09-29": {
     "price": 3239.0,
     "first_seen": "2026-08-02 12:13:55",
     "last_notified": "2026-08-04 12:43:56",
     "seat_category": "economy",
-    "dep_date": "2026-09-29"
+    "dep_date": "2026-09-29",
+    "miss_count": 1
   },
   "business|印度航空AI351 > 印度航空AI143|2026-10-01": {
     "price": 11365.0,
     "first_seen": "2026-08-02 12:13:55",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "business",
-    "dep_date": "2026-10-01"
+    "dep_date": "2026-10-01",
+    "miss_count": 0
   },
   "economy|泰国国际航空TG665 > 泰国国际航空TG930|2026-09-28": {
     "price": 4545.0,
     "first_seen": "2026-08-03 12:48:23",
     "last_notified": "2026-08-03 12:48:23",
     "seat_category": "economy",
-    "dep_date": "2026-09-28"
+    "dep_date": "2026-09-28",
+    "miss_count": 1
   },
   "economy|南航CZ3585 > 南航CZ347|2026-09-30": {
     "price": 4757.0,
     "first_seen": "2026-08-03 12:48:23",
     "last_notified": "2026-08-03 12:48:23",
     "seat_category": "economy",
-    "dep_date": "2026-09-30"
+    "dep_date": "2026-09-30",
+    "miss_count": 1
   },
   "economy|南航CZ3526 > 南航CZ347|2026-09-30": {
     "price": 4757.0,
     "first_seen": "2026-08-03 12:48:23",
     "last_notified": "2026-08-03 12:48:23",
     "seat_category": "economy",
-    "dep_date": "2026-09-30"
+    "dep_date": "2026-09-30",
+    "miss_count": 1
   },
   "business|印度航空AI351 > 印度航空AI147|2026-10-01": {
     "price": 11365.0,
     "first_seen": "2026-08-03 12:48:23",
     "last_notified": "2026-08-04 18:08:50",
     "seat_category": "business",
-    "dep_date": "2026-10-01"
+    "dep_date": "2026-10-01",
+    "miss_count": 1
   },
   "economy|越南航空VN533 > 越南航空VN019|2026-09-17": {
     "price": 2886.0,
     "first_seen": "2026-08-03 18:12:36",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-17"
+    "dep_date": "2026-09-17",
+    "miss_count": 0
   },
   "business|新海航|海南航空HU7493 > 新海航|海南航空HU717|2026-10-02": {
     "price": 12029.0,
     "first_seen": "2026-08-03 18:12:36",
     "last_notified": "2026-08-03 18:12:36",
     "seat_category": "business",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "economy|新海航|海南航空HU7842 > 新海航|海南航空HU7907|2026-09-16": {
     "price": 3009.0,
     "first_seen": "2026-08-04 00:13:16",
     "last_notified": "2026-08-04 12:43:56",
     "seat_category": "economy",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 1
   },
   "economy|新海航|海南航空HU7844 > 新海航|海南航空HU7907|2026-09-16": {
     "price": 3009.0,
     "first_seen": "2026-08-04 00:13:16",
     "last_notified": "2026-08-04 00:13:16",
     "seat_category": "economy",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 1
   },
   "economy|新海航|海南航空HU7846 > 新海航|海南航空HU7907|2026-09-16": {
     "price": 3009.0,
     "first_seen": "2026-08-04 00:13:16",
     "last_notified": "2026-08-04 00:13:16",
     "seat_category": "economy",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 1
   },
   "business|吉祥HO1659 > 布鲁塞尔航空SN3629|2026-09-18": {
     "price": 10659.0,
     "first_seen": "2026-08-04 00:13:16",
     "last_notified": "2026-08-04 00:13:16",
     "seat_category": "business",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 1
   },
   "economy|越南航空VN533 > 越南航空VN019|2026-09-16": {
     "price": 2886.0,
     "first_seen": "2026-08-04 12:10:41",
     "last_notified": "2026-08-07 14:50:38",
     "seat_category": "economy",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 1
   },
   "economy|海湾航空GF125 > 海湾航空GF019|2026-09-18": {
     "price": 3183.0,
     "first_seen": "2026-08-04 12:10:41",
     "last_notified": "2026-08-07 14:50:38",
     "seat_category": "economy",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 1
   },
   "economy|新海航|海南航空HU7726 > 新海航|海南航空HU757|2026-10-01": {
     "price": 3569.0,
     "first_seen": "2026-08-04 12:10:41",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-10-01"
+    "dep_date": "2026-10-01",
+    "miss_count": 0
   },
   "economy|国航CA1510 > 国航CA875|2026-10-01": {
     "price": 3970.0,
     "first_seen": "2026-08-04 12:10:41",
     "last_notified": "2026-08-07 11:51:51",
     "seat_category": "economy",
-    "dep_date": "2026-10-01"
+    "dep_date": "2026-10-01",
+    "miss_count": 1
   },
   "economy|国航CA1550 > 国航CA875|2026-10-01": {
     "price": 3970.0,
     "first_seen": "2026-08-04 12:10:41",
     "last_notified": "2026-08-04 12:43:56",
     "seat_category": "economy",
-    "dep_date": "2026-10-01"
+    "dep_date": "2026-10-01",
+    "miss_count": 1
   },
   "economy|国航CA1516 > 国航CA875|2026-10-01": {
     "price": 3970.0,
     "first_seen": "2026-08-04 12:10:41",
     "last_notified": "2026-08-04 12:43:56",
     "seat_category": "economy",
-    "dep_date": "2026-10-01"
+    "dep_date": "2026-10-01",
+    "miss_count": 1
   },
   "economy|国航CA1566 > 国航CA933|2026-10-02": {
     "price": 2840.0,
     "first_seen": "2026-08-04 12:43:56",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "economy|国航CA1510 > 国航CA933|2026-10-02": {
     "price": 2840.0,
     "first_seen": "2026-08-04 12:43:56",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "economy|国航CA8358 > 国航CA933|2026-10-02": {
     "price": 2840.0,
     "first_seen": "2026-08-04 12:43:56",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "economy|国航CA1550 > 国航CA933|2026-10-02": {
     "price": 2840.0,
     "first_seen": "2026-08-04 12:43:56",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "economy|国航CA1516 > 国航CA933|2026-10-02": {
     "price": 2840.0,
     "first_seen": "2026-08-04 12:43:56",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "economy|国航CA1836 > 国航CA933|2026-10-02": {
     "price": 2840.0,
     "first_seen": "2026-08-04 12:43:56",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "economy|国航CA8342 > 国航CA933|2026-10-02": {
     "price": 2840.0,
     "first_seen": "2026-08-04 12:43:56",
     "last_notified": "2026-08-05 18:08:33",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "economy|国航CA1522 > 国航CA933|2026-10-02": {
     "price": 2840.0,
     "first_seen": "2026-08-04 12:43:56",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "economy|国航CA1518 > 国航CA933|2026-10-02": {
     "price": 2840.0,
     "first_seen": "2026-08-04 12:43:56",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "economy|国航CA1534 > 国航CA933|2026-10-02": {
     "price": 2840.0,
     "first_seen": "2026-08-04 12:43:56",
     "last_notified": "2026-08-06 00:08:59",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "business|厦航MF8510 > 厦航MF825|2026-09-16": {
     "price": 12659.0,
     "first_seen": "2026-08-04 18:08:50",
     "last_notified": "2026-08-05 00:08:40",
     "seat_category": "business",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 1
   },
   "business|厦航MF8522 > 厦航MF825|2026-09-16": {
-    "price": 12659.0,
+    "price": 10287.0,
     "first_seen": "2026-08-04 18:08:50",
-    "last_notified": "2026-08-05 00:08:40",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "business",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 0
   },
   "business|厦航MF8568 > 厦航MF825|2026-09-16": {
     "price": 10287.0,
     "first_seen": "2026-08-04 18:08:50",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "business",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 0
   },
   "business|厦航MF8512 > 厦航MF825|2026-09-16": {
     "price": 10287.0,
     "first_seen": "2026-08-04 18:08:50",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "business",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 0
   },
   "business|厦航MF8502 > 厦航MF825|2026-09-16": {
     "price": 10287.0,
     "first_seen": "2026-08-04 18:08:50",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "business",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 0
   },
   "business|厦航MF8518 > 厦航MF825|2026-09-16": {
     "price": 10287.0,
     "first_seen": "2026-08-04 18:08:50",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "business",
-    "dep_date": "2026-09-16"
+    "dep_date": "2026-09-16",
+    "miss_count": 0
   },
   "economy|越南航空VN525 > 越南航空VN011|2026-09-21": {
     "price": 2772.0,
     "first_seen": "2026-08-04 18:08:50",
     "last_notified": "2026-08-05 00:08:40",
     "seat_category": "economy",
-    "dep_date": "2026-09-21"
+    "dep_date": "2026-09-21",
+    "miss_count": 1
   },
   "business|印度航空AI351 > 印度航空AI143|2026-09-25": {
     "price": 11365.0,
     "first_seen": "2026-08-04 18:08:50",
     "last_notified": "2026-08-05 18:08:33",
     "seat_category": "business",
-    "dep_date": "2026-09-25"
+    "dep_date": "2026-09-25",
+    "miss_count": 1
   },
   "economy|新海航|海南航空HU7722 > 新海航|海南航空HU757|2026-09-27": {
     "price": 3009.0,
     "first_seen": "2026-08-04 18:08:50",
     "last_notified": "2026-08-04 18:08:50",
     "seat_category": "economy",
-    "dep_date": "2026-09-27"
+    "dep_date": "2026-09-27",
+    "miss_count": 1
   },
   "economy|新海航|海南航空HU7726 > 新海航|海南航空HU757|2026-09-27": {
     "price": 2979.0,
     "first_seen": "2026-08-04 18:08:50",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-09-27"
+    "dep_date": "2026-09-27",
+    "miss_count": 1
   },
   "economy|吉祥HO1661 > 瑞安航空FR3724|2026-09-30": {
     "price": 4499.0,
     "first_seen": "2026-08-04 18:08:50",
     "last_notified": "2026-08-04 18:08:50",
     "seat_category": "economy",
-    "dep_date": "2026-09-30"
+    "dep_date": "2026-09-30",
+    "miss_count": 1
   },
   "economy|国航CA1884 > 国航CA933|2026-10-02": {
     "price": 2840.0,
     "first_seen": "2026-08-04 18:08:50",
     "last_notified": "2026-08-04 18:08:50",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "economy|国航CA1508 > 国航CA875|2026-09-18": {
     "price": 4750.0,
     "first_seen": "2026-08-05 00:08:40",
     "last_notified": "2026-08-05 00:08:40",
     "seat_category": "economy",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 1
   },
   "economy|国航CA1590 > 国航CA875|2026-09-18": {
     "price": 4750.0,
     "first_seen": "2026-08-05 00:08:40",
     "last_notified": "2026-08-05 00:08:40",
     "seat_category": "economy",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 1
   },
   "economy|吉祥HO1657 > 爱琴海航空A3614|2026-09-30": {
     "price": 4203.0,
     "first_seen": "2026-08-05 00:08:40",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-09-30"
+    "dep_date": "2026-09-30",
+    "miss_count": 0
   },
   "economy|厦航MF8568 > 厦航MF825|2026-09-30": {
     "price": 4157.0,
     "first_seen": "2026-08-05 00:08:40",
     "last_notified": "2026-08-07 14:50:38",
     "seat_category": "economy",
-    "dep_date": "2026-09-30"
+    "dep_date": "2026-09-30",
+    "miss_count": 1
   },
   "economy|厦航MF8512 > 厦航MF825|2026-09-30": {
     "price": 4157.0,
     "first_seen": "2026-08-05 00:08:40",
     "last_notified": "2026-08-07 14:50:38",
     "seat_category": "economy",
-    "dep_date": "2026-09-30"
+    "dep_date": "2026-09-30",
+    "miss_count": 1
   },
   "economy|新海航|金鹏航空Y87566 > 新海航|海南航空HU757|2026-09-27": {
     "price": 3579.0,
     "first_seen": "2026-08-05 18:08:33",
     "last_notified": "2026-08-05 18:08:33",
     "seat_category": "economy",
-    "dep_date": "2026-09-27"
+    "dep_date": "2026-09-27",
+    "miss_count": 1
   },
   "economy|新海航|金鹏航空Y87566 > 新海航|海南航空HU757|2026-09-20": {
     "price": 3579.0,
     "first_seen": "2026-08-06 00:08:59",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-09-20"
+    "dep_date": "2026-09-20",
+    "miss_count": 1
   },
   "economy|新海航|金鹏航空Y87566 > 新海航|海南航空HU757|2026-10-01": {
-    "price": 3459.0,
+    "price": 3579.0,
     "first_seen": "2026-08-06 00:08:59",
-    "last_notified": "2026-08-07 14:50:38",
+    "last_notified": "2026-08-07 19:00:46",
     "seat_category": "economy",
-    "dep_date": "2026-10-01"
+    "dep_date": "2026-10-01",
+    "miss_count": 0
   },
   "economy|新海航|西部航空PN6374 > 新海航|海南航空HU717|2026-10-02": {
     "price": 2679.0,
     "first_seen": "2026-08-06 00:08:59",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "economy|新海航|西部航空PN6438 > 新海航|海南航空HU717|2026-10-02": {
     "price": 2679.0,
     "first_seen": "2026-08-06 00:08:59",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-10-02"
+    "dep_date": "2026-10-02",
+    "miss_count": 1
   },
   "business|厦航MF8522 > 厦航MF825|2026-09-18": {
     "price": 12629.0,
     "first_seen": "2026-08-06 12:08:15",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "business",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 1
   },
   "business|厦航MF8502 > 厦航MF825|2026-09-18": {
     "price": 12629.0,
     "first_seen": "2026-08-06 12:08:15",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "business",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 1
   },
   "business|厦航MF8518 > 厦航MF825|2026-09-18": {
     "price": 12629.0,
     "first_seen": "2026-08-06 12:08:15",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "business",
-    "dep_date": "2026-09-18"
+    "dep_date": "2026-09-18",
+    "miss_count": 1
   },
   "economy|厦航MF8522 > 厦航MF825|2026-09-20": {
     "price": 3717.0,
     "first_seen": "2026-08-06 12:08:15",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-09-20"
+    "dep_date": "2026-09-20",
+    "miss_count": 1
   },
   "economy|韩亚航空OZ368 > 德威航空TW401|2026-09-23": {
     "price": 4410.0,
     "first_seen": "2026-08-06 12:08:15",
     "last_notified": "2026-08-06 12:08:15",
     "seat_category": "economy",
-    "dep_date": "2026-09-23"
+    "dep_date": "2026-09-23",
+    "miss_count": 1
   },
   "economy|厦航MF8502 > 厦航MF825|2026-09-30": {
     "price": 4157.0,
     "first_seen": "2026-08-07 14:50:38",
     "last_notified": "2026-08-07 14:50:38",
     "seat_category": "economy",
-    "dep_date": "2026-09-30"
+    "dep_date": "2026-09-30",
+    "miss_count": 1
   },
   "economy|厦航MF8518 > 厦航MF825|2026-09-30": {
     "price": 4157.0,
     "first_seen": "2026-08-07 14:50:38",
     "last_notified": "2026-08-07 14:50:38",
     "seat_category": "economy",
-    "dep_date": "2026-09-30"
+    "dep_date": "2026-09-30",
+    "miss_count": 1
+  },
+  "economy|国航CA1522 > 国航CA933|2026-09-19": {
+    "price": 3970.0,
+    "first_seen": "2026-08-07 19:00:46",
+    "last_notified": "2026-08-07 19:00:46",
+    "seat_category": "economy",
+    "dep_date": "2026-09-19",
+    "miss_count": 0
+  },
+  "economy|国航CA1518 > 国航CA933|2026-09-19": {
+    "price": 3970.0,
+    "first_seen": "2026-08-07 19:00:46",
+    "last_notified": "2026-08-07 19:00:46",
+    "seat_category": "economy",
+    "dep_date": "2026-09-19",
+    "miss_count": 0
+  },
+  "economy|印度航空AI351 > 印度航空AI147|2026-09-25": {
+    "price": 3443.0,
+    "first_seen": "2026-08-07 19:00:46",
+    "last_notified": "2026-08-07 19:00:46",
+    "seat_category": "economy",
+    "dep_date": "2026-09-25",
+    "miss_count": 0
+  },
+  "economy|印度航空AI351 > 印度航空AI143|2026-09-25": {
+    "price": 3485.0,
+    "first_seen": "2026-08-07 19:00:46",
+    "last_notified": "2026-08-07 19:00:46",
+    "seat_category": "economy",
+    "dep_date": "2026-09-25",
+    "miss_count": 0
   }
 }
