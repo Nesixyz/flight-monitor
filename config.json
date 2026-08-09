@@ -1,6 +1,6 @@
 {
-  "origin": "Shanghai",
-  "destination": "Paris",
+  "origin": "SHA",
+  "destination": "PAR",
   "date_start": "2026-09-16",
   "date_end": "2026-10-02",
   "business_max_price": 13000,

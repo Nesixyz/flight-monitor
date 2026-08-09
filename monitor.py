@@ -70,12 +70,54 @@ RECOMMEND_DATE_END = "2026-10-01"
 # ---------------- 基础工具 ----------------
 
 def load_config():
+    """加载配置并校验必填字段
+    缺失关键字段时 log.error 明确列出缺了什么，避免后续 KeyError 难以定位"""
+    if not CONFIG_PATH.exists():
+        log.error("config.json 不存在！请参考 config.example.json 创建。")
+        log.error("GitHub Actions 用户：检查 workflow 中是否执行了 cp config.example.json config.json")
+        sys.exit(1)
     with open(CONFIG_PATH, "r", encoding="utf-8") as f:
         cfg = json.load(f)
-    if os.environ.get("SERVERCHAN_KEY"):
-        cfg["serverchan_key"] = os.environ["SERVERCHAN_KEY"]
-    if os.environ.get("FLYAI_API_KEY"):
-        cfg["flyai_api_key"] = os.environ["FLYAI_API_KEY"]
+    # 环境变量覆盖（非空才覆盖，避免空字符串覆盖有效配置）
+    serverchan_env = os.environ.get("SERVERCHAN_KEY")
+    if serverchan_env:
+        cfg["serverchan_key"] = serverchan_env
+    flyai_env = os.environ.get("FLYAI_API_KEY")
+    if flyai_env:
+        cfg["flyai_api_key"] = flyai_env
+
+    # 必填字段校验：缺失时明确报错，避免 KeyError 在后续调用栈深处暴露
+    required_fields = {
+        "origin": "出发地（三字码，如 SHA/PVG）",
+        "destination": "目的地（三字码，如 PAR/CDG）",
+        "date_start": "出发日期起始（YYYY-MM-DD）",
+        "date_end": "出发日期截止（YYYY-MM-DD）",
+        "business_max_price": "公务舱价格上限",
+        "economy_max_price": "经济舱价格上限",
+        "max_transfers": "最大中转次数（0=直飞, 1=最多1次中转）",
+    }
+    missing = [f for f in required_fields if f not in cfg or cfg.get(f) in (None, "")]
+    if missing:
+        log.error("config.json 缺失必填字段: %s", ", ".join(missing))
+        for f in missing:
+            log.error("  - %s: %s", f, required_fields[f])
+        sys.exit(1)
+
+    # schedule 子字段校验（get_current_phase 强依赖）
+    schedule = cfg.get("schedule", {})
+    schedule_required = ["phase1_end", "phase2_end", "monitor_end"]
+    schedule_missing = [f for f in schedule_required if f not in schedule]
+    if schedule_missing:
+        log.error("config.json schedule 字段缺失: %s", ", ".join(schedule_missing))
+        log.error("请参考 config.example.json 中的 schedule 配置")
+        sys.exit(1)
+
+    # API key 校验（缺失会导致查询失败但不立即退出，给出明确警告）
+    if not cfg.get("flyai_api_key"):
+        log.warning("flyai_api_key 未配置，查询将失败！请配置 FLYAI_API_KEY 环境变量或 config.json 字段")
+    if not cfg.get("serverchan_key"):
+        log.warning("serverchan_key 未配置，将无法推送微信通知")
+
     return cfg
 
 
@@ -196,8 +238,17 @@ def get_flyai_cmd():
 # ---------------- flyai 查询 ----------------
 
 def run_flyai(cfg, dep_date, seat_class, max_price):
-    """调用 flyai search-flight，返回 (itemList, blocked)
-    blocked=True 表示触发风控，建议停止后续查询"""
+    """调用 flyai search-flight，返回 (itemList, blocked, api_failed)
+    - itemList: 飞猪返回的航班列表，失败时为空列表
+    - blocked: True 表示触发风控(403)，建议停止后续查询
+    - api_failed: True 表示 API 调用本身失败（非0且非"结果为空"），
+                  主流程会累加 fail_count，连续失败达到阈值提前结束
+
+    status 码含义：
+    - status=0: 成功，data.itemList 可能为空
+    - status=1 + message 含"结果为空": 正常无符合条件航班，不算失败
+    - 其他 status: 真错误（额度耗尽/后端维护/参数错误等），算失败
+    """
     cmd = get_flyai_cmd() + [
         "search-flight",
         "--origin", cfg["origin"],
@@ -210,7 +261,7 @@ def run_flyai(cfg, dep_date, seat_class, max_price):
     env = os.environ.copy()
     if cfg.get("flyai_api_key"):
         env["FLYAI_API_KEY"] = cfg["flyai_api_key"]
-    timeout = cfg.get("query_timeout_sec", 60)
+    timeout = cfg.get("query_timeout_sec", 30)
     log.info("查询 %s %s (timeout=%ss)", dep_date, seat_class, timeout)
     try:
         # start_new_session 创建新进程组，timeout 后可 killpg 强制杀死 node 及子进程
@@ -232,30 +283,41 @@ def run_flyai(cfg, dep_date, seat_class, max_price):
                 pass
             proc.communicate()
             log.warning("flyai 查询超时(已强制终止) %s %s", dep_date, seat_class)
-            return [], False
+            return [], False, True
         stdout = stdout_b.decode("utf-8", errors="replace") if stdout_b else ""
         stderr = stderr_b.decode("utf-8", errors="replace") if stderr_b else ""
         # 风控检测
         if "risk control" in stderr or "Abnormal access" in stderr or "403" in stderr:
             log.warning("触发飞猪风控(403): %s %s", dep_date, seat_class)
-            return [], True
+            return [], True, True
         if proc.returncode != 0:
             log.warning("flyai exit=%s: %s", proc.returncode, stderr[:200])
-            return [], False
+            return [], False, True
         data = json.loads(stdout)
-        if str(data.get("status", "")) != "0":
-            msg = data.get("systemMessage", "")
-            log.warning("flyai status!=0: %s", msg)
-            return [], False
-        log.info("查询成功 %s %s: %d 条结果", dep_date, seat_class,
-                 len(data.get("data", {}).get("itemList", []) or []))
-        return data.get("data", {}).get("itemList", []) or [], False
+        status = str(data.get("status", ""))
+        message = data.get("message", "") or ""
+        system_msg = data.get("systemMessage", "") or ""
+        if status != "0":
+            # 区分"正常无数据"和"真错误"
+            # message 含"结果为空"或"无"等字样视为正常无数据，不算 API 失败
+            empty_indicators = ["结果为空", "无数据", "无符合", "暂无"]
+            is_empty_result = any(s in message for s in empty_indicators)
+            if is_empty_result:
+                log.info("查询成功 %s %s: 0 条结果（%s）", dep_date, seat_class, message)
+                return [], False, False
+            # 真错误：打印完整 status/message/systemMessage 便于诊断
+            log.warning("flyai API 错误: status=%s message=%s systemMessage=%s",
+                        status, message, system_msg)
+            return [], False, True
+        items = data.get("data", {}).get("itemList", []) or []
+        log.info("查询成功 %s %s: %d 条结果", dep_date, seat_class, len(items))
+        return items, False, False
     except json.JSONDecodeError as e:
         log.warning("flyai JSON 解析失败 %s %s: %s", dep_date, seat_class, e)
-        return [], False
+        return [], False, True
     except Exception as e:
         log.warning("flyai 查询异常 %s %s: %s", dep_date, seat_class, e)
-        return [], False
+        return [], False, True
 
 
 def _parse_dt(s):
@@ -448,7 +510,10 @@ def parse_flight(item, seat_category):
         "total_duration": total_minutes,
         "total_duration_str": _fmt_duration_cn(total_minutes),
         "jump_url": item.get("jumpUrl", ""),
-        "dedupe_key": f"{seat_category}|{flight_numbers}|{dep_dt[:10]}",
+        # dedupe_key 含 dep_time（精确到分钟）：
+        # 同一天同舱位同航班号但不同起飞时刻视为不同行程
+        # 避免留学生价/普通价等不同价格条件的航班被错误合并
+        "dedupe_key": f"{seat_category}|{flight_numbers}|{dep_dt[:16]}",
     }
 
 
@@ -488,9 +553,24 @@ def load_notified():
 
 
 def save_notified(notified):
+    """保存前去重清理：
+    - miss_count >= 3 的记录视为已确认消失，清理掉（已在 gone 中展示过）
+      避免 notified.json 无限膨胀 + 下次运行重复进 gone 列表造成噪音
+    - dep_date 异常（空或 '?'）的坏数据也清理掉"""
+    cleaned = {}
+    removed = 0
+    for key, v in notified.items():
+        mc = v.get("miss_count", 0)
+        dep = v.get("dep_date", "")
+        if mc >= 3 or not dep or dep == "?":
+            removed += 1
+            continue
+        cleaned[key] = v
+    if removed:
+        log.info("清理 notified: 移除 %d 条已确认消失/坏数据记录，保留 %d 条", removed, len(cleaned))
     _atomic_write(
         NOTIFIED_PATH,
-        json.dumps(notified, ensure_ascii=False, indent=2)
+        json.dumps(cleaned, ensure_ascii=False, indent=2)
     )
 
 
@@ -501,7 +581,6 @@ def diff_flights(current_flights, notified, blocked_dates=None):
     不参与消失判断，避免误判
     消失判定：连续 2 次运行都未出现（miss_count >= 2）才加入 gone，
     单次未出现只递增 miss_count，避免飞猪价格波动导致误报"""
-    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     stats = {"new": 0, "cheaper": 0, "higher": 0, "unchanged": 0}
     gone = []
     blocked_set = set(blocked_dates or [])
@@ -532,6 +611,7 @@ def diff_flights(current_flights, notified, blocked_dates=None):
     # 找出不再符合条件的记录（上次有，本次无）
     # 跳过 blocked_dates：这些日期本次未查询，不能判定为消失
     # 递增 miss_count，只有连续 2 次未出现才加入 gone
+    # 注意：miss_count >= 3 的记录上次已被 save_notified 清理，这里最多看到 2
     for key, prev in notified.items():
         if key in current_keys:
             continue
@@ -541,8 +621,18 @@ def diff_flights(current_flights, notified, blocked_dates=None):
         miss_count = prev.get("miss_count", 0) + 1
         prev["miss_count"] = miss_count
         if miss_count >= 2:
-            gone.append({"key": key, "price": prev.get("price", 0),
-                         "last_notified": prev.get("last_notified", "")})
+            # 带上结构化字段，便于友好展示（解决 gone 列表只显示原始 key 的问题）
+            seat_cat = prev.get("seat_category", "")
+            cat_label = "公务舱" if seat_cat == "business" else "经济舱" if seat_cat == "economy" else seat_cat
+            gone.append({
+                "key": key,
+                "price": prev.get("price", 0),
+                "dep_date": prev_dep_date,
+                "seat_category": seat_cat,
+                "cat_label": cat_label,
+                "flight_info": key,  # 兜底，key 中含航班号信息
+                "last_notified": prev.get("last_notified", ""),
+            })
 
     return current_flights, stats, gone
 
@@ -717,7 +807,13 @@ def format_run_message(all_flights, stats, gone, cfg, blocked_dates):
     if gone:
         lines.append("### ❌ 不再符合条件航班（连续2次未出现，可能涨价超阈值或停售）")
         for g in gone[:10]:
-            lines.append(f"- {g['key']} ¥{g['price']:.0f}")
+            # 优先用结构化字段友好展示，兜底用原始 key
+            dep = g.get("dep_date", "")
+            cat = g.get("cat_label", "")
+            if dep and cat:
+                lines.append(f"- {dep} {cat} ¥{g['price']:.0f}")
+            else:
+                lines.append(f"- {g['key']} ¥{g['price']:.0f}")
         if len(gone) > 10:
             lines.append(f"_...及其它 {len(gone)-10} 条_")
         lines.append("")
@@ -791,11 +887,18 @@ def generate_html(all_flights, stats, gone, cfg, blocked_dates):
 
     gone_html = ""
     if gone:
-        gone_rows = "".join(
-            f"<li>{html.escape(g['key'])} ¥{g['price']:.0f} <span class='muted'>({g.get('last_notified','')})</span></li>"
-            for g in gone
-        )
-        gone_html = f"<div class='gone'><h3>❌ 不再符合条件航班（{len(gone)}）</h3><ul>{gone_rows}</ul></div>"
+        gone_rows = []
+        for g in gone:
+            dep = g.get("dep_date", "")
+            cat = g.get("cat_label", "")
+            if dep and cat:
+                label = f"{html.escape(dep)} {html.escape(cat)} ¥{g['price']:.0f}"
+            else:
+                label = f"{html.escape(g['key'])} ¥{g['price']:.0f}"
+            gone_rows.append(
+                f"<li>{label} <span class='muted'>({html.escape(g.get('last_notified',''))})</span></li>"
+            )
+        gone_html = f"<div class='gone'><h3>❌ 不再符合条件航班（{len(gone)}）</h3><ul>{''.join(gone_rows)}</ul></div>"
 
     blocked_html = ""
     if blocked_dates:
@@ -929,7 +1032,8 @@ def main():
 
     all_flights = []
     query_count = 0
-    fail_count = 0
+    fail_count = 0  # 连续失败计数（风控或API错误都算）
+    api_fail_total = 0  # 本次运行 API 失败总数（用于日志统计）
     blocked = False
     blocked_dates = []
     for date in all_dates:
@@ -937,16 +1041,19 @@ def main():
             blocked_dates.append(date)
             continue
         for seat_class, max_price, category in queries:
-            items, is_blocked = run_flyai(cfg, date, seat_class, max_price)
+            items, is_blocked, api_failed = run_flyai(cfg, date, seat_class, max_price)
             query_count += 1
-            if is_blocked:
+            if is_blocked or api_failed:
                 fail_count += 1
+                if api_failed:
+                    api_fail_total += 1
                 if fail_count >= RISK_BLOCK_FAIL_THRESHOLD:
-                    log.warning("连续 %d 次触发风控，提前结束本轮剩余查询", fail_count)
+                    reason = "风控" if is_blocked else "API连续失败"
+                    log.warning("连续 %d 次%s，提前结束本轮剩余查询", fail_count, reason)
                     blocked = True
                     break
             else:
-                fail_count = 0  # 成功则重置计数
+                fail_count = 0  # 成功（含正常无数据）则重置计数
             for item in items:
                 f = parse_flight(item, category)
                 if not f:
@@ -956,8 +1063,12 @@ def main():
             time.sleep(cfg.get("query_interval_sec", 12))
         # 日期切换不再额外 sleep，query_interval_sec 已足够间隔
 
-    log.info("查询完成: %d 次查询, 命中 %d 条符合条件航班, 风控跳过 %d 天",
-             query_count, len(all_flights), len(blocked_dates))
+    log.info("查询完成: %d 次查询, 命中 %d 条符合条件航班, 风控/API失败 %d 次, 跳过 %d 天",
+             query_count, len(all_flights), api_fail_total, len(blocked_dates))
+    if api_fail_total > 0 and api_fail_total >= query_count * 0.5:
+        # 超过一半查询失败，大概率是额度耗尽或参数错误
+        log.warning("⚠️ 本次 API 失败率 %.0f%%，请检查 flyai_api_key 额度或参数配置",
+                    api_fail_total / max(query_count, 1) * 100)
 
     # 变化对比
     notified = load_notified()

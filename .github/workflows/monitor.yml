@@ -58,10 +58,20 @@ jobs:
           git add notified.json push_history.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "状态无变化，跳过提交"
-          else
-            git commit -m "chore: 更新监控状态 $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-            git push
+            exit 0
           fi
+          git commit -m "chore: 更新监控状态 $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          # pull --rebase + 重试，避免并发运行时 push 被拒导致状态丢失
+          for i in 1 2 3; do
+            if git pull --rebase origin main && git push; then
+              echo "提交成功（尝试 $i）"
+              exit 0
+            fi
+            echo "提交失败（尝试 $i/3），3秒后重试..."
+            sleep 3
+          done
+          echo "⚠️ 状态文件提交失败，本次状态未同步回仓库，下次运行可能重复推送"
+          exit 1
 
       - name: 准备看板部署目录
         run: |
