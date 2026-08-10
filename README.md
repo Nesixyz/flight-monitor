@@ -16,14 +16,14 @@
 | 特性 | 说明 |
 |---|---|
 | 🔍 **全量日期监控** | 每次运行完整查询 [date_start, date_end] 区间内所有日期（公务+经济双舱位） |
-| 🏷️ **变化对比** | 与上次结果对比，标注 🆕新增 / ⬇降价 / ⬆涨价 / —不变 / ❌消失 |
-| 📱 **Server酱微信推送** | 每次运行有内容即推，推送额度按阶段动态匹配（2~4 条/天），无需担心刷屏 |
-| ⭐ **智能推荐** | 按更严格价格+日期窗口自动选出公务/经济各 1 条总时长最短的航班放在顶部 |
-| 📊 **在线看板** | GitHub Pages 展示完整结果（公务/经济分类表 + 推荐卡片 + 风控/消失提示） |
-| 💰 **飞猪额度友好** | 三阶段动态频率（抓低价3次/天、稳观察2次/天、冲刺期4次/天），每天最多 ~68 次调用 |
+| 🏷️ **变化对比** | 与上次结果对比，标注 🆕新增 / ⬇降价 / ⬆涨价 / —不变 / ❌不再符合条件 |
+| 📱 **Server酱微信推送** | 每次运行有内容即推，推送额度按阶段动态匹配（2~4 条/天），超长正文自动截断保留总结 |
+| ⭐ **智能推荐** | 按更严格价格+日期窗口自动选出公务/经济各 1 条总时长最短的航班放在顶部（条件可配置） |
+| 📊 **在线看板** | GitHub Pages 展示完整结果（公务/经济分类表 + 推荐卡片 + 风控/不再符合提示） |
+| 💰 **飞猪额度友好** | 三阶段动态频率（抓低价3次/天、稳观察2次/天、冲刺期4次/天），累计超 4500 次自动告警 |
 | 🧭 **跨时区时长修正** | 基于 `segment.duration` 求和（飞猪本地时间已校正），避免上海/巴黎 6 小时时差导致总时长算短 |
 | 🔒 **敏感信息隔离** | key 走环境变量/Secrets，`config.json` 本地用不提交 |
-| ⚡ **手动触发旁路** | 设 `MANUAL_RUN=1` 跳过时段检查立即执行，方便调试 |
+| ⚡ **手动触发旁路** | 设 `MANUAL_RUN=1` 跳过时段检查立即执行，即使命中 0 条也推状态报告 |
 
 ---
 
@@ -98,8 +98,8 @@ cp config.example.json config.json
 
 ```jsonc
 {
-  "origin": "Shanghai",                    // 出发城市（flyai 接受的三字码或英文城市名）
-  "destination": "Paris",                  // 目的地
+  "origin": "SHA",                         // 出发城市三字码（SHA=上海全部机场含PVG浦东+SHA虹桥）
+  "destination": "PAR",                    // 目的地三字码（PAR=巴黎全部机场含CDG戴高乐+ORY奥利+BVA博韦）
   "date_start": "2026-09-16",
   "date_end": "2026-10-02",
   "business_max_price": 13000,             // 公务舱含税价格上限
@@ -117,9 +117,17 @@ cp config.example.json config.json
   "push": {
     "urgent_drop_pct": 5,                  // 降价百分比阈值，超过会带 🚨 标记
     "urgent_drop_abs": 500                 // 降价绝对阈值，超过会带 🚨 标记
+  },
+  "recommend": {                           // 推荐航班筛选（可省略，缺省用默认值）
+    "business_max_price": 10000,           //   推荐公务舱价格上限
+    "economy_max_price": 5000,             //   推荐经济舱价格上限
+    "date_start": "2026-09-23",            //   推荐日期窗口起
+    "date_end": "2026-10-01"               //   推荐日期窗口止
   }
 }
 ```
+
+> **三字码说明**：用城市码（SHA/PAR）能覆盖城市全部机场；用机场码（PVG/CDG）只查单个机场。早期版本用英文城市名 `Shanghai`/`Paris` 已被飞猪 API 停止支持，必须改用三字码。
 
 ### 4. 立即运行一次（手动触发）
 
@@ -225,17 +233,25 @@ def _md_safe_url(url):
     return url.replace(")", "%29").replace("(", "%28").replace(" ", "%20")
 ```
 
-### 3. 风控日期误判为消失航班
+### 3. 风控日期误判 + 价格波动误判消失航班
 
-**问题**：飞猪风控（403/Abnormal access）时当日返回空列表，如果直接和 notified 记录对比，会把「查询失败」的全部航班标成 ❌消失（最多一天报 200+ 条消失，实际只是飞猪风控）。
+**问题1**：飞猪风控（403/Abnormal access）时当日返回空列表，如果直接和 notified 记录对比，会把「查询失败」的全部航班标成 ❌消失（最多一天报 200+ 条消失，实际只是飞猪风控）。
 
-**解法**：`run_all()` 累积 `blocked_dates`，传给 `diff_flights`，这些日期下的已记录航班跳过消失判定。只有「查询成功且航班未出现」才标为消失。
+**问题2**：飞猪价格波动导致某航班临时返回不到（比如刚好涨过阈值），单次未出现就被报"消失"，下次又出现，造成反复噪音。
+
+**解法**：
+- `blocked_dates` 机制：风控未查询的日期，其下已记录航班跳过消失判定
+- `miss_count` 机制：连续 **2 次**运行都未出现才加入 gone 列表（单次未出现只递增 miss_count，不报）
+- `save_notified` 清理：miss_count >= 3 的记录视为已确认消失，自动从 notified.json 删除，避免无限膨胀和下次重复进 gone
+- 文案用「不再符合条件」替代「消失」，更准确
 
 ### 4. 手动触发旁路 `MANUAL_RUN=1`
 
 脚本正常只在 cron 指定时间点执行，但调试时或需要立即更新看板（如买完机票验证价格），用 `MANUAL_RUN=1` 强制 `should_run=True`。
 
 GitHub Actions workflow_dispatch 的 `manual_run` 默认 `true`，自动注入 `MANUAL_RUN=1`；本地用 `MANUAL_RUN=1 python3 monitor.py`。
+
+手动触发时即使命中 0 条也会推送一条简短状态报告（含 API 调用次数、失败率、风控天数），让用户知道执行完了，不必去翻 Actions 日志。
 
 ### 5. 定时环境 PATH 缺失找不到 python
 
@@ -286,15 +302,15 @@ def _extract_jump_url(url):
 ```
 flight-monitor/
 ├── monitor.py                    # 主脚本（查询/筛选/对比/推送/看板生成）
-├── config.example.json           # 配置模板（含注释，可提交）
+├── config.example.json           # 配置模板（可提交，CI 中 cp 为 config.json）
 ├── config.json                   # 本地实际配置（不提交，已 .gitignore）
-├── dashboard.html                # 看板（每次运行自动生成）
+├── dashboard.html                # 看板（运行时生成，不提交，Pages 用 artifact 部署）
 ├── package.json                  # flyai-cli 依赖声明
 ├── .github/workflows/monitor.yml # GitHub Actions 配置（cron + 手动触发 + Pages）
-├── notified.json                 # 去重记录（提交，跨运行持久化）
-├── push_history.json             # 每日推送计数（提交，跨运行持久化）
+├── notified.json                 # 去重记录（提交，跨运行持久化，miss_count>=3 自动清理）
+├── push_history.json             # 每日推送计数 + 飞猪API累计调用（提交，跨运行持久化）
 ├── monitor.log                   # 本地日志（不提交）
-├── node_modules/                 # npm 安装目录（不提交）
+├── node_modules/                 # npm 安装目录（不提交，CI 有缓存）
 └── README.md
 ```
 
@@ -314,18 +330,27 @@ phase1_hours = {0, 12, 18}     # 抓低价：3次/天
 phase2_hours = {0, 12}         # 稳观察：2次/天
 phase3_hours = {0, 6, 12, 18}  # 冲刺期：4次/天
 ```
-同时改 workflow cron 两个列表对齐（workflow 是触发入口，内部阶段判断是守门人）。
+
+⚠️ **改阶段小时必须同步改 workflow cron**（北京时间 = UTC + 8h）。workflow 顶部已附对照表：
+```
+阶段1 {0,12,18} 北京 → UTC {16,4,10} → cron: '0 4,10,16 * * *'
+阶段2 {0,12}    北京 → UTC {16,4}    → cron: '0 4,16 * * *'
+阶段3 {0,6,12,18} 北京 → UTC {16,22,4,10} → cron: '0 4,10,16,22 * * *'
+```
+当前 cron 用阶段3 的4个时间点全集，由脚本内按阶段决定是否执行。
 
 ### 改推荐航班筛选
 
-`monitor.py` 顶部常量：
-```python
-RECOMMEND_BUSINESS_MAX_PRICE = 10000
-RECOMMEND_ECONOMY_MAX_PRICE = 5000
-RECOMMEND_DATE_START = "2026-09-23"
-RECOMMEND_DATE_END = "2026-10-01"
+推荐航班的筛选条件（价格上限、日期窗口）在 `config.json` 的 `recommend` 字段里，无需改代码：
+```json
+"recommend": {
+  "business_max_price": 10000,
+  "economy_max_price": 5000,
+  "date_start": "2026-09-23",
+  "date_end": "2026-10-01"
+}
 ```
-`pick_recommended()` 按总时长排序，取第 0 条，如要最便宜就把排序 key 改成 `f["price"]`。
+省略该字段时用 `monitor.py` 顶部 `DEFAULT_RECOMMEND_*` 常量兜底。`pick_recommended()` 按总时长排序取第 1 条，如要改为最便宜就把排序 key 改成 `f["price"]`。
 
 ### 接入其他通知方式
 
