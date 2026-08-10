@@ -60,18 +60,23 @@ log = logging.getLogger("flight-monitor")
 # 风控保护：连续失败达到阈值则提前结束本轮
 RISK_BLOCK_FAIL_THRESHOLD = 3
 
-# 推荐航班筛选条件（独立于监控阈值的更严格推荐标准，用于推送/看板顶部展示）
-RECOMMEND_BUSINESS_MAX_PRICE = 10000
-RECOMMEND_ECONOMY_MAX_PRICE = 5000
-RECOMMEND_DATE_START = "2026-09-23"
-RECOMMEND_DATE_END = "2026-10-01"
+# 推荐航班筛选默认值（可被 config.json recommend 字段覆盖，便于临时调整而不改代码）
+DEFAULT_RECOMMEND_BUSINESS_MAX_PRICE = 10000
+DEFAULT_RECOMMEND_ECONOMY_MAX_PRICE = 5000
+DEFAULT_RECOMMEND_DATE_START = "2026-09-23"
+DEFAULT_RECOMMEND_DATE_END = "2026-10-01"
+
+# 飞猪 API 累计调用阈值：超过则在推送开头给额度告警提醒
+#   首赠 5000 次，取 90% 做首次告警
+FLYAI_WARN_THRESHOLD = 4500
 
 
 # ---------------- 基础工具 ----------------
 
 def load_config():
     """加载配置并校验必填字段
-    缺失关键字段时 log.error 明确列出缺了什么，避免后续 KeyError 难以定位"""
+    缺失关键字段时 log.error 明确列出缺了什么，避免后续 KeyError 难以定位
+    可选字段（recommend/push）缺失时使用默认值兜底"""
     if not CONFIG_PATH.exists():
         log.error("config.json 不存在！请参考 config.example.json 创建。")
         log.error("GitHub Actions 用户：检查 workflow 中是否执行了 cp config.example.json config.json")
@@ -111,6 +116,22 @@ def load_config():
         log.error("config.json schedule 字段缺失: %s", ", ".join(schedule_missing))
         log.error("请参考 config.example.json 中的 schedule 配置")
         sys.exit(1)
+
+    # 可选字段：recommend（推荐航班筛选条件，未配置时用默认值）
+    rec_cfg = cfg.get("recommend", {}) or {}
+    cfg["recommend"] = {
+        "business_max_price": rec_cfg.get("business_max_price", DEFAULT_RECOMMEND_BUSINESS_MAX_PRICE),
+        "economy_max_price": rec_cfg.get("economy_max_price", DEFAULT_RECOMMEND_ECONOMY_MAX_PRICE),
+        "date_start": rec_cfg.get("date_start", DEFAULT_RECOMMEND_DATE_START),
+        "date_end": rec_cfg.get("date_end", DEFAULT_RECOMMEND_DATE_END),
+    }
+
+    # 可选字段：push（保证至少有默认阈值）
+    push_cfg = cfg.get("push", {}) or {}
+    cfg["push"] = {
+        "urgent_drop_pct": push_cfg.get("urgent_drop_pct", 5),
+        "urgent_drop_abs": push_cfg.get("urgent_drop_abs", 500),
+    }
 
     # API key 校验（缺失会导致查询失败但不立即退出，给出明确警告）
     if not cfg.get("flyai_api_key"):
@@ -165,21 +186,78 @@ def get_current_phase(cfg):
     return phase, current_hour in phase_hours, phase_max_push[phase]
 
 
-# ---------------- 推送历史 ----------------
+# ---------------- 推送历史 + API 用量 ----------------
 
 def load_push_history():
-    if PUSH_HISTORY_PATH.exists():
-        try:
-            return json.loads(PUSH_HISTORY_PATH.read_text(encoding="utf-8"))
-        except Exception:
-            return {}
-    return {}
+    """读取 push_history.json 并做旧格式迁移：
+    - 每日记录若为旧类型分计格式 {urgent:1, summary:2} → 迁移为 {run:3}
+    - 旧的 int 格式（直接存数字）→ 迁移为 {run: N}
+    - 同时保留 _meta.flyai_calls_total 用于 API 调用次数累计
+    """
+    if not PUSH_HISTORY_PATH.exists():
+        return {}
+    try:
+        data = json.loads(PUSH_HISTORY_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    if not isinstance(data, dict):
+        return {}
+    # 保留元信息（flyai_calls_total 等），独立于日期字段
+    meta = data.pop("_meta", {}) if "_meta" in data else {}
+    migrated_any = False
+    today_prefix = datetime.now().strftime("%Y-%")
+    # 所有形如 YYYY-MM-DD 的 key 视为日期记录
+    new_data = {}
+    for k, v in data.items():
+        if len(k) == 10 and k[4] == "-" and k[7] == "-":
+            # 日期记录
+            if isinstance(v, int) or isinstance(v, float):
+                # 旧 int 格式 → {run: v}
+                new_data[k] = {"run": int(v)}
+                migrated_any = True
+            elif isinstance(v, dict):
+                if "run" not in v and len(v) > 0:
+                    # 旧类型分计 {urgent:1, summary:2} → {run: 3}
+                    new_data[k] = {"run": sum(v.values())}
+                    migrated_any = True
+                else:
+                    new_data[k] = v
+            else:
+                new_data[k] = v
+        else:
+            # 非日期字段原样保留（兼容未来扩展）
+            new_data[k] = v
+    if meta:
+        new_data["_meta"] = meta
+    if migrated_any:
+        log.info("push_history 格式已迁移（旧类型分计 → 统一 run 计数）")
+    return new_data
 
 
 def save_push_history(history):
-    _atomic_write(
-        PUSH_HISTORY_PATH,
-        json.dumps(history, ensure_ascii=False, indent=2)
+    try:
+        _atomic_write(
+            PUSH_HISTORY_PATH,
+            json.dumps(history, ensure_ascii=False, indent=2)
+        )
+    except Exception as e:
+        # 保存失败不致整个作业崩溃，仅告警（下次运行会丢失计数 → 可能多推1条，影响极小）
+        log.warning("save_push_history 失败: %s", e)
+
+
+def get_flyai_calls_total(history):
+    """读取累计 flyai API 调用次数（保存在 _meta 中）"""
+    return int(history.get("_meta", {}).get("flyai_calls_total", 0))
+
+
+def add_flyai_calls(history, n):
+    """累计 flyai API 调用次数 n 次"""
+    if n <= 0:
+        return
+    if "_meta" not in history:
+        history["_meta"] = {}
+    history["_meta"]["flyai_calls_total"] = (
+        int(history["_meta"].get("flyai_calls_total", 0)) + n
     )
 
 
@@ -210,14 +288,23 @@ def record_push(history):
             del history[k]
 
 
+# generate_dates 结果缓存（监控日期范围在一次运行中固定）
+_DATES_CACHE = {}
+
+
 def generate_dates(start, end):
-    """生成 [start, end] 闭区间的所有日期，格式 YYYY-MM-DD"""
+    """生成 [start, end] 闭区间的所有日期，格式 YYYY-MM-DD
+    同一 start/end 在单次运行中只会解析一次，避免重复调用"""
+    cache_key = (start, end)
+    if cache_key in _DATES_CACHE:
+        return _DATES_CACHE[cache_key]
     dates = []
     cur = datetime.strptime(start, "%Y-%m-%d")
     end_dt = datetime.strptime(end, "%Y-%m-%d")
     while cur <= end_dt:
         dates.append(cur.strftime("%Y-%m-%d"))
         cur += timedelta(days=1)
+    _DATES_CACHE[cache_key] = dates
     return dates
 
 
@@ -320,12 +407,26 @@ def run_flyai(cfg, dep_date, seat_class, max_price):
         return [], False, True
 
 
+# _parse_dt 支持的格式（按优先级尝试，越常用越靠前）
+_DT_FORMATS = (
+    "%Y-%m-%d %H:%M:%S",   # 飞猪返回的标准格式
+    "%Y-%m-%d %H:%M",      # 某些接口偶发只返回 HH:MM 不含秒
+    "%Y/%m/%d %H:%M:%S",   # 斜杠分隔变体
+    "%Y-%m-%dT%H:%M:%S",   # ISO 格式
+)
+
+
 def _parse_dt(s):
-    """解析 'YYYY-MM-DD HH:MM:SS' 为 datetime，失败返回 None"""
-    try:
-        return datetime.strptime(s, "%Y-%m-%d %H:%M:%S")
-    except (ValueError, TypeError):
+    """解析多种 datetime 格式为 datetime，失败返回 None
+    避免飞猪接口微调格式时导致中转时长等字段算不出来"""
+    if not s:
         return None
+    for fmt in _DT_FORMATS:
+        try:
+            return datetime.strptime(s, fmt)
+        except (ValueError, TypeError):
+            continue
+    return None
 
 
 def _fmt_duration_cn(minutes):
@@ -396,7 +497,9 @@ def parse_flight(item, seat_category):
     """从原始 item 提取结构化航班信息
     route: 中转信息（城市名/停留时长/到达-出发时间）
     total_duration: 飞猪返回的该行程总时长"""
-    journey = item.get("journeys", [{}])[0]
+    # 空列表 [] 不走 [{}] 兜底，加一层 or 确保 journeys=[] 时也能降级为 {}
+    journeys = item.get("journeys") or [{}]
+    journey = journeys[0] if journeys else {}
     segments = journey.get("segments", [])
     if not segments:
         return None
@@ -517,17 +620,28 @@ def parse_flight(item, seat_category):
     }
 
 
-def pick_recommended(flights):
+def pick_recommended(flights, recommend_cfg=None):
     """从本次命中航班中挑选推荐航班（公务舱/经济舱各 1 条）
     条件：价格 ≤ 推荐阈值，出发日期在推荐日期窗口内，总时长有效
     排序：总时长越短越好
-    返回 {"business": f_or_None, "economy": f_or_None}"""
+    返回 {"business": f_or_None, "economy": f_or_None}
+    recommend_cfg: 从 cfg["recommend"] 传入，缺省时使用默认值兜底"""
+    if recommend_cfg is None:
+        recommend_cfg = {
+            "business_max_price": DEFAULT_RECOMMEND_BUSINESS_MAX_PRICE,
+            "economy_max_price": DEFAULT_RECOMMEND_ECONOMY_MAX_PRICE,
+            "date_start": DEFAULT_RECOMMEND_DATE_START,
+            "date_end": DEFAULT_RECOMMEND_DATE_END,
+        }
+    date_start = recommend_cfg["date_start"]
+    date_end = recommend_cfg["date_end"]
+
     def pick(category, max_price):
         candidates = [
             f for f in flights
             if f["seat_category"] == category
             and f["price"] <= max_price
-            and RECOMMEND_DATE_START <= f["dep_date"] <= RECOMMEND_DATE_END
+            and date_start <= f["dep_date"] <= date_end
             and f.get("total_duration", 0) > 0
         ]
         if not candidates:
@@ -536,8 +650,8 @@ def pick_recommended(flights):
         return candidates[0]
 
     return {
-        "business": pick("business", RECOMMEND_BUSINESS_MAX_PRICE),
-        "economy": pick("economy", RECOMMEND_ECONOMY_MAX_PRICE),
+        "business": pick("business", recommend_cfg["business_max_price"]),
+        "economy": pick("economy", recommend_cfg["economy_max_price"]),
     }
 
 
@@ -568,10 +682,14 @@ def save_notified(notified):
         cleaned[key] = v
     if removed:
         log.info("清理 notified: 移除 %d 条已确认消失/坏数据记录，保留 %d 条", removed, len(cleaned))
-    _atomic_write(
-        NOTIFIED_PATH,
-        json.dumps(cleaned, ensure_ascii=False, indent=2)
-    )
+    try:
+        _atomic_write(
+            NOTIFIED_PATH,
+            json.dumps(cleaned, ensure_ascii=False, indent=2)
+        )
+    except Exception as e:
+        # notified 写失败不致整体崩溃；下次运行会把同航班标为新增，影响极小
+        log.warning("save_notified 失败: %s", e)
 
 
 def diff_flights(current_flights, notified, blocked_dates=None):
@@ -656,9 +774,16 @@ def update_notified(notified, flights, now_str):
 
 # ---------------- Server酱 推送 ----------------
 
-def send_serverchan(key, title, desp, max_retries=1):
+def send_serverchan(key, title, desp, max_retries=2):
     """通过 Server酱 推送微信通知
-    失败后重试 max_retries 次，每次间隔 3s"""
+    - 超长正文（>30KB）会自动截断航班细节，保留总结+推荐，加看板链接引导
+    - 失败后重试 max_retries 次，每次间隔 3s"""
+    MAX_BYTES = 30 * 1024  # Server酱 约 32KB 限制，留 2KB 余量
+    desp_bytes = desp.encode("utf-8")
+    if len(desp_bytes) > MAX_BYTES:
+        log.warning("推送正文过大 (%d KB > %d KB 限制)，自动截断航班细节",
+                    len(desp_bytes) // 1024, MAX_BYTES // 1024)
+        desp = _truncate_for_push(desp, MAX_BYTES)
     url = f"https://sctapi.ftqq.com/{key}.send"
     data = urllib.parse.urlencode({"title": title, "desp": desp}).encode("utf-8")
     last_err = None
@@ -678,6 +803,38 @@ def send_serverchan(key, title, desp, max_retries=1):
         if attempt < max_retries:
             time.sleep(3)
     return False
+
+
+def _truncate_for_push(desp, max_bytes):
+    """超长正文截断：保留总结+推荐部分，航班细节列表替换为看板链接
+    策略：找到 '### 💼 公务舱' 标记处截断，插入 '内容过长→看板' 提示"""
+    dashboard_url = os.environ.get("DASHBOARD_URL", "在线看板")
+    truncate_markers = [
+        "### 💼 公务舱",   # 常见版本
+        "### 公务舱",
+        "### 经济舱",
+    ]
+    cut_pos = None
+    for marker in truncate_markers:
+        p = desp.find(marker)
+        if p > 0 and (cut_pos is None or p < cut_pos):
+            cut_pos = p
+    if cut_pos:
+        # 先截断到 cut_pos
+        truncated = desp[:cut_pos]
+        suffix = (
+            f"\n> 📋 **航班细节内容过大已省略，请在 [在线看板]({_md_safe_url(dashboard_url)}) 查看完整航班明细（含购票链接）**\n\n"
+            "---\n"
+        )
+        # 如果加了 suffix 仍然超，再做硬截断（极少情况）
+        result = truncated + suffix
+        if len(result.encode("utf-8")) > max_bytes:
+            result = result[: max_bytes // 3] + suffix  # 按字符近似截断
+        return result
+    # 没找到标记则硬截断，保留 2/3 内容并加提示
+    limit = max_bytes * 2 // 3
+    truncated = desp[: limit // 3]  # 按字符近似
+    return truncated + f"\n\n_内容过大已截断，请查看 [在线看板]({_md_safe_url(dashboard_url)}) 获取完整信息_\n"
 
 
 def change_text(f):
@@ -706,10 +863,11 @@ def is_urgent_drop(f, cfg):
     return drop_pct >= pct_threshold or drop_abs >= abs_threshold
 
 
-def format_run_message(all_flights, stats, gone, cfg, blocked_dates):
+def format_run_message(all_flights, stats, gone, cfg, blocked_dates, flyai_warn_line=None):
     """格式化本次运行结果推送（总结 + 航班细节）
-    总结部分含：查询范围、命中航班、变化对比、降价提醒、推荐航班
-    航班细节部分：公务舱列表、经济舱列表、消失航班"""
+    总结部分含：查询范围、命中航班、变化对比、降价提醒、推荐航班、API额度告警（如有）
+    航班细节部分：公务舱列表、经济舱列表、消失航班
+    flyai_warn_line: 非空时插入额度告警行（放在总结末尾，风控提示之后）"""
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
     business = [f for f in all_flights if f["seat_category"] == "business"]
     economy = [f for f in all_flights if f["seat_category"] == "economy"]
@@ -742,14 +900,19 @@ def format_run_message(all_flights, stats, gone, cfg, blocked_dates):
 
     if blocked_dates:
         lines.append(f"- **⚠️风控**: {len(blocked_dates)}天因飞猪风控未查询")
+    if flyai_warn_line:
+        lines.append(flyai_warn_line)
     lines.append("")
 
     # 推荐航班（公务/经济各 1 条，价格+日期窗口+总时长最短）
-    rec = pick_recommended(all_flights)
+    rec_cfg = cfg.get("recommend", {})
+    rec = pick_recommended(all_flights, rec_cfg)
     lines.append("### ⭐ 推荐航班")
     lines.append(
-        f"_筛选: 公务≤¥{RECOMMEND_BUSINESS_MAX_PRICE} / 经济≤¥{RECOMMEND_ECONOMY_MAX_PRICE}, "
-        f"日期 {RECOMMEND_DATE_START}~{RECOMMEND_DATE_END}, 总时长最短_"
+        f"_筛选: 公务≤¥{rec_cfg.get('business_max_price', DEFAULT_RECOMMEND_BUSINESS_MAX_PRICE)} "
+        f"/ 经济≤¥{rec_cfg.get('economy_max_price', DEFAULT_RECOMMEND_ECONOMY_MAX_PRICE)}, "
+        f"日期 {rec_cfg.get('date_start', DEFAULT_RECOMMEND_DATE_START)}"
+        f"~{rec_cfg.get('date_end', DEFAULT_RECOMMEND_DATE_END)}, 总时长最短_"
     )
     lines.append("")
     for cat, label in [("business", "💼 公务舱"), ("economy", "💺 经济舱")]:
@@ -905,7 +1068,8 @@ def generate_html(all_flights, stats, gone, cfg, blocked_dates):
         blocked_html = f"<div class='warn'>⚠️ 以下日期因飞猪风控未能查询: {', '.join(blocked_dates)}</div>"
 
     # 推荐航班卡片（公务/经济各 1 条）
-    rec = pick_recommended(all_flights)
+    rec_cfg = cfg.get("recommend", {})
+    rec = pick_recommended(all_flights, rec_cfg)
     rec_cards = []
     for cat, label, emoji in [("business", "公务舱", "💼"), ("economy", "经济舱", "💺")]:
         f = rec[cat]
@@ -930,9 +1094,10 @@ def generate_html(all_flights, stats, gone, cfg, blocked_dates):
 {transfer_html}
 <a href="{url}" target="_blank" class="rec-buy">点击购票</a>
 </div>""")
+    rcfg = cfg.get("recommend", {})
     recommend_html = f"""<div class="recommend">
 <h2>⭐ 推荐航班</h2>
-<p class="muted">筛选: 公务≤¥{RECOMMEND_BUSINESS_MAX_PRICE} / 经济≤¥{RECOMMEND_ECONOMY_MAX_PRICE}, 日期 {RECOMMEND_DATE_START}~{RECOMMEND_DATE_END}, 总时长最短</p>
+<p class="muted">筛选: 公务≤¥{rcfg.get('business_max_price', DEFAULT_RECOMMEND_BUSINESS_MAX_PRICE)} / 经济≤¥{rcfg.get('economy_max_price', DEFAULT_RECOMMEND_ECONOMY_MAX_PRICE)}, 日期 {rcfg.get('date_start', DEFAULT_RECOMMEND_DATE_START)}~{rcfg.get('date_end', DEFAULT_RECOMMEND_DATE_END)}, 总时长最短</p>
 <div class="rec-row">{''.join(rec_cards)}</div>
 </div>"""
 
@@ -998,8 +1163,12 @@ a:hover{{text-decoration:underline}}
 <hr><p class="muted">数据来源: 飞猪 flyai-cli · 本看板由 monitor.py 自动生成</p>
 <p class="muted">🌐 在线看板: <a href="{os.environ.get('DASHBOARD_URL', '#')}">{os.environ.get('DASHBOARD_URL', '未设置')}</a></p>
 </body></html>"""
-    _atomic_write(DASHBOARD_PATH, html_content)
-    log.info("已更新本地看板 %s", DASHBOARD_PATH)
+    try:
+        _atomic_write(DASHBOARD_PATH, html_content)
+        log.info("已更新本地看板 %s", DASHBOARD_PATH)
+    except Exception as e:
+        # 看板生成失败不影响主功能（推送和记录）
+        log.warning("generate_html 保存失败: %s", e)
 
 
 # ---------------- 主流程 ----------------
@@ -1081,14 +1250,60 @@ def main():
     generate_html(all_flights, stats, gone, cfg, blocked_dates)
 
     # 推送：每次运行有内容就推1条，额度按阶段动态匹配执行次数
+    #   手动触发(MANUAL_RUN=1)即使无内容也推简短状态报告，让用户知道执行完了
     push_history = load_push_history()
     pushed = False
+    is_manual = os.environ.get("MANUAL_RUN") == "1"
+
+    # ---- API 调用次数累计 & 额度告警 ----
+    # 每次运行把本次 query_count 累计到 push_history._meta.flyai_calls_total
+    add_flyai_calls(push_history, query_count)
+    total_calls = get_flyai_calls_total(push_history)
+    flyai_warn_line = None
+    if total_calls >= FLYAI_WARN_THRESHOLD:
+        pct = total_calls / 5000 * 100
+        flyai_warn_line = (
+            f"⚠️ **飞猪 API 额度告警**: 已累计调用 {total_calls} 次 / 5000（约 {pct:.0f}%）。"
+            f"请留意剩余额度，即将耗尽时可在飞猪申请日包。"
+        )
+        log.warning(flyai_warn_line)
 
     has_content = len(all_flights) > 0 or len(gone) > 0
     if not has_content:
-        log.info("本次无命中航班且无消失航班，不推送（仅更新看板）")
+        # 手动触发无内容 → 推简短状态报告（告诉用户跑完了，不是没动静）
+        if is_manual and can_push(push_history, max_push_per_day):
+            now = datetime.now().strftime("%Y-%m-%d %H:%M")
+            title = f"上海→巴黎机票监控 手动运行完成（命中0条）"
+            dashboard_url = os.environ.get("DASHBOARD_URL", "")
+            desp_parts = [
+                f"## ✅ 手动运行完成",
+                f"_执行时间: {now}_",
+                "",
+                f"### 📊 执行结果",
+                f"- **查询范围**: {cfg['date_start']} ~ {cfg['date_end']}",
+                f"- **API 调用**: {query_count} 次（失败 {api_fail_total} 次）",
+                f"- **命中航班**: 0 条",
+                f"- **失败率**: {api_fail_total / max(query_count, 1) * 100:.0f}%",
+            ]
+            if blocked_dates:
+                desp_parts.append(f"- **风控跳过**: {len(blocked_dates)} 天")
+            if flyai_warn_line:
+                desp_parts.append("")
+                desp_parts.append(flyai_warn_line)
+            desp_parts.append("")
+            if dashboard_url:
+                desp_parts.append(f"_在线看板: {dashboard_url}_")
+            if send_serverchan(cfg["serverchan_key"], title, "\n".join(desp_parts)):
+                record_push(push_history)
+                pushed = True
+                log.info("已推送手动运行状态报告（命中0条）")
+            else:
+                log.warning("手动运行推送失败")
+        else:
+            log.info("本次无命中航班且无消失航班，不推送（仅更新看板）")
     elif can_push(push_history, max_push_per_day):
-        title, desp = format_run_message(all_flights, stats, gone, cfg, blocked_dates)
+        title, desp = format_run_message(all_flights, stats, gone, cfg, blocked_dates,
+                                          flyai_warn_line=flyai_warn_line)
         if send_serverchan(cfg["serverchan_key"], title, desp):
             record_push(push_history)
             pushed = True

@@ -18,5 +18,11 @@
   "push": {
     "urgent_drop_pct": 5,
     "urgent_drop_abs": 500
+  },
+  "recommend": {
+    "business_max_price": 10000,
+    "economy_max_price": 5000,
+    "date_start": "2026-09-23",
+    "date_end": "2026-10-01"
   }
 }

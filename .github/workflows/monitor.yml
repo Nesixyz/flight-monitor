@@ -1,18 +1,27 @@
 name: 上海巴黎机票监控
 
+# ⚠️ 重要：若修改 monitor.py 中的阶段小时集合（phase1_hours / phase2_hours / phase3_hours），
+#   必须同步修改上面的 cron 表达式，否则会出现"触发了但脚本跳过"或"漏触发"。
+# 对应关系：北京时间 = UTC + 8h
+#   阶段1 {0,12,18} 北京时间  →  UTC {16, 4, 10}  →  cron: '0 4,10,16 * * *'
+#   阶段2 {0,12}    北京时间  →  UTC {16, 4}       →  cron: '0 4,16 * * *'
+#   阶段3 {0,6,12,18} 北京时间  →  UTC {16,22,4,10}  →  cron: '0 4,10,16,22 * * *'
+# 当前 cron 使用阶段3 的4个时间点全集，由脚本内按阶段决定是否执行
 on:
   schedule:
     - cron: '0 4,10,16,22 * * *'
   workflow_dispatch:
     inputs:
       manual_run:
-        description: '手动触发立即执行（跳过时段检查）'
+        description: '执行模式（选择"立即执行"会跳过阶段时段检查）'
         required: false
         default: 'true'
         type: choice
         options:
-          - 'true'
-          - 'false'
+          - label: '立即执行（跳过时段检查）'
+            value: 'true'
+          - label: '按阶段时段策略决定（不在时段则不执行）'
+            value: 'false'
 
 permissions:
   contents: write
@@ -42,7 +51,18 @@ jobs:
         with:
           node-version: '20'
 
-      - run: npm install
+      # 缓存 node_modules（npm install 提速）
+      - name: 缓存 npm 依赖
+        uses: actions/cache@v4
+        id: npm-cache
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json', 'package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: 安装 npm 依赖
+        run: npm install
 
       - run: cp config.example.json config.json
 
@@ -50,8 +70,10 @@ jobs:
         env:
           MANUAL_RUN: ${{ github.event.inputs.manual_run == 'true' && '1' || '0' }}
         run: python3 monitor.py
+        continue-on-error: true   # 后续看板和状态提交不受监控失败影响
 
       - name: 提交状态文件回主分支
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -74,16 +96,23 @@ jobs:
           exit 1
 
       - name: 准备看板部署目录
+        if: always()
         run: |
           mkdir -p public
-          cp dashboard.html public/index.html
+          if [ -f dashboard.html ]; then
+            cp dashboard.html public/index.html
+          else
+            echo "<!doctype html><meta charset=utf-8><title>未生成</title><p>监控失败或未生成 dashboard.html，请稍后查看</p>" > public/index.html
+          fi
 
       - uses: actions/upload-pages-artifact@v3
+        if: always()
         with:
           path: public
 
   deploy-pages:
     needs: monitor
+    if: always()   # 即使 monitor 部分失败也尝试部署（artifact 中会有兜底 HTML）
     runs-on: ubuntu-latest
     environment:
       name: github-pages

@@ -4,3 +4,6 @@ node_modules/
 package-lock.json
 .DS_Store
 desktop-tutorial/
+# 看板为运行时生成物，Pages 部署用 artifact 上传，不需要进仓库
+dashboard.html
+public/
