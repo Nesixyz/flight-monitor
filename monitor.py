@@ -1189,6 +1189,35 @@ def main():
             log.info("监控已停止（购票截止日 %s 已过），如需重启请修改 config.json 的 monitor_end", cfg["schedule"]["monitor_end"])
         else:
             log.info("当前为%s阶段，当前时段不执行查询，跳过（节省额度）", phase_names[phase])
+        # 即使跳过也生成看板（用 notified.json 已有数据），避免兜底页面覆盖上次正常看板
+        notified = load_notified()
+        skip_flights = []
+        for key, info in notified.items():
+            if info.get("miss_count", 0) >= 3:
+                continue  # 已清理的记录不展示
+            parts = key.split("|")
+            flight_numbers = parts[1] if len(parts) >= 3 else ""
+            skip_flights.append({
+                "seat_category": info.get("seat_category", ""),
+                "dep_date": info.get("dep_date", ""),
+                "price": info.get("price", 0),
+                "change": "unchanged",
+                "prev_price": 0,
+                "is_direct": False,
+                "transfer_count": 0,
+                "dep_time": "",
+                "arr_time": "",
+                "jump_url": "",
+                "route": "（详细信息见上次运行）",
+                "transfers": [],
+                "flight_numbers": flight_numbers,
+                "dep_airport": "",
+                "arr_airport": "",
+                "total_duration_str": "—",
+            })
+        skip_stats = {"new": 0, "cheaper": 0, "higher": 0, "unchanged": len(skip_flights)}
+        generate_html(skip_flights, skip_stats, [], cfg, [])
+        log.info("跳过运行，已用已有数据更新看板（%d 条记录）", len(skip_flights))
         return
 
     all_dates = generate_dates(cfg["date_start"], cfg["date_end"])

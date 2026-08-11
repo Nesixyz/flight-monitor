@@ -35,6 +35,8 @@ concurrency:
 jobs:
   monitor:
     runs-on: ubuntu-latest
+    outputs:
+      has_dashboard: ${{ steps.prepare_dashboard.outputs.has_dashboard }}
     env:
       TZ: Asia/Shanghai
       SERVERCHAN_KEY: ${{ secrets.SERVERCHAN_KEY }}
@@ -97,22 +99,25 @@ jobs:
 
       - name: 准备看板部署目录
         if: always()
+        id: prepare_dashboard
         run: |
           mkdir -p public
           if [ -f dashboard.html ]; then
             cp dashboard.html public/index.html
+            echo "has_dashboard=true" >> $GITHUB_OUTPUT
           else
-            echo "<!doctype html><meta charset=utf-8><title>未生成</title><p>监控失败或未生成 dashboard.html，请稍后查看</p>" > public/index.html
+            echo "has_dashboard=false" >> $GITHUB_OUTPUT
+            echo "dashboard.html 不存在（monitor.py 未生成），本次不部署看板，保留上次部署"
           fi
 
       - uses: actions/upload-pages-artifact@v3
-        if: always()
+        if: always() && steps.prepare_dashboard.outputs.has_dashboard == 'true'
         with:
           path: public
 
   deploy-pages:
     needs: monitor
-    if: always()   # 即使 monitor 部分失败也尝试部署（artifact 中会有兜底 HTML）
+    if: always() && needs.monitor.outputs.has_dashboard == 'true'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
