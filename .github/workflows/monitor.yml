@@ -70,8 +70,14 @@ jobs:
 
       - name: 运行监控
         env:
-          MANUAL_RUN: ${{ github.event.inputs.manual_run == 'true' && '1' || '0' }}
-        run: python3 monitor.py
+          # 注意：inputs.manual_run 值是字符串，与 'true' 等比较后返回 Boolean，
+          # 传给 env 时会序列化成 "True"/"False" 字符串，所以这里统一用显式 if 输出 "1"/"0"
+          MANUAL_RUN: ${{ github.event.inputs.manual_run == 'true' && '1' || github.event.inputs.manual_run == 'True' && '1' || github.event.inputs.manual_run == '1' && '1' || '0' }}
+        run: |
+          # 调试输出：确认 MANUAL_RUN 值和 manual_run 原始值
+          echo "event.inputs.manual_run=${{ github.event.inputs.manual_run }}"
+          echo "MANUAL_RUN=$MANUAL_RUN"
+          python3 monitor.py
         continue-on-error: true   # 后续看板和状态提交不受监控失败影响
 
       - name: 提交状态文件回主分支

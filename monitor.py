@@ -47,6 +47,15 @@ PUSH_HISTORY_PATH = BASE_DIR / "push_history.json"
 DASHBOARD_PATH = BASE_DIR / "dashboard.html"
 LOG_PATH = BASE_DIR / "monitor.log"
 
+
+def _is_manual_run() -> bool:
+    """MANUAL_RUN 宽松判断：支持 '1'/'true'/'True'/'yes' 等。
+    GitHub Actions inputs 的 value='true' 在表达式中与 'true' 比较，
+    返回值是 Boolean true，序列化到 env 会变成字符串 "True"，
+    所以不能只判断 == "1"。"""
+    v = os.environ.get("MANUAL_RUN", "")
+    return v in ("1", "true", "True", "yes", "Yes", "on")
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -180,7 +189,7 @@ def get_current_phase(cfg):
         phase_hours = phase3_hours
 
     # 手动触发：跳过时段检查，立即执行
-    if os.environ.get("MANUAL_RUN") == "1":
+    if _is_manual_run():
         return phase, True, phase_max_push[phase]
 
     return phase, current_hour in phase_hours, phase_max_push[phase]
@@ -1282,7 +1291,7 @@ def main():
     #   手动触发(MANUAL_RUN=1)即使无内容也推简短状态报告，让用户知道执行完了
     push_history = load_push_history()
     pushed = False
-    is_manual = os.environ.get("MANUAL_RUN") == "1"
+    is_manual = _is_manual_run()
 
     # ---- API 调用次数累计 & 额度告警 ----
     # 每次运行把本次 query_count 累计到 push_history._meta.flyai_calls_total
