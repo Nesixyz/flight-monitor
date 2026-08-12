@@ -1,4 +1,4 @@
-name: 上海巴黎机票监控
+name: 机票价格监控
 
 # ⚠️ 重要：若修改 monitor.py 中的阶段小时集合（phase1_hours / phase2_hours / phase3_hours），
 #   必须同步修改上面的 cron 表达式，否则会出现"触发了但脚本跳过"或"漏触发"。

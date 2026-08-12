@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
-上海 → 巴黎 机票价格监控
+机票价格监控（支持去程/回程）
 
 数据源：飞猪官方 flyai-cli (search-flight)
 通知 : Server酱 (推送至微信，分级推送)
@@ -72,8 +72,8 @@ RISK_BLOCK_FAIL_THRESHOLD = 3
 # 推荐航班筛选默认值（可被 config.json recommend 字段覆盖，便于临时调整而不改代码）
 DEFAULT_RECOMMEND_BUSINESS_MAX_PRICE = 10000
 DEFAULT_RECOMMEND_ECONOMY_MAX_PRICE = 5000
-DEFAULT_RECOMMEND_DATE_START = "2026-09-23"
-DEFAULT_RECOMMEND_DATE_END = "2026-10-01"
+DEFAULT_RECOMMEND_DATE_START = "2026-10-06"
+DEFAULT_RECOMMEND_DATE_END = "2026-10-09"
 
 # 飞猪 API 累计调用阈值：超过则在推送开头给额度告警提醒
 #   首赠 5000 次，取 90% 做首次告警
@@ -99,6 +99,14 @@ def load_config():
     flyai_env = os.environ.get("FLYAI_API_KEY")
     if flyai_env:
         cfg["flyai_api_key"] = flyai_env
+
+    # 城市名称映射（三字码 → 中文名，用于推送和看板文案）
+    CITY_NAMES = {
+        "SHA": "上海", "PVG": "上海", "SHA(上海)": "上海",
+        "PAR": "巴黎", "CDG": "巴黎", "ORY": "巴黎", "BVA": "巴黎",
+    }
+    cfg.setdefault("origin_name", CITY_NAMES.get(cfg.get("origin", ""), cfg.get("origin", "出发地")))
+    cfg.setdefault("destination_name", CITY_NAMES.get(cfg.get("destination", ""), cfg.get("destination", "目的地")))
 
     # 必填字段校验：缺失时明确报错，避免 KeyError 在后续调用栈深处暴露
     required_fields = {
@@ -883,10 +891,10 @@ def format_run_message(all_flights, stats, gone, cfg, blocked_dates, flyai_warn_
     business.sort(key=lambda f: f["dep_date"], reverse=True)
     economy.sort(key=lambda f: f["dep_date"], reverse=True)
 
-    title = f"上海→巴黎机票监控 命中{len(all_flights)}条(公务{len(business)}/经济{len(economy)})"
+    title = f"{cfg['origin_name']}→{cfg['destination_name']}机票监控 命中{len(all_flights)}条(公务{len(business)}/经济{len(economy)})"
 
     lines = [
-        f"## ✈️ 上海 → 巴黎 机票监控结果",
+        f"## ✈️ {cfg['origin_name']} → {cfg['destination_name']} 机票监控结果",
         f"_检测时间: {now}_",
         "",
         "### 📊 本次总结",
@@ -1112,7 +1120,7 @@ def generate_html(all_flights, stats, gone, cfg, blocked_dates):
 
     html_content = f"""<!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>上海→巴黎机票监控看板</title>
+<title>{cfg['origin_name']}→{cfg['destination_name']}机票监控看板</title>
 <style>
 body{{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;max-width:1200px;margin:0 auto;padding:20px;background:#fafafa;color:#222}}
 h1{{color:#1a4fbf;border-bottom:2px solid #1a4fbf;padding-bottom:8px}}
@@ -1149,7 +1157,7 @@ a:hover{{text-decoration:underline}}
 .rec-buy{{display:inline-block;margin-top:8px;padding:6px 16px;background:#1a4fbf;color:#fff!important;border-radius:4px;font-size:13px}}
 .rec-buy:hover{{background:#16409e;text-decoration:none}}
 </style></head><body>
-<h1>✈️ 上海 → 巴黎 机票监控看板</h1>
+<h1>✈️ {cfg['origin_name']} → {cfg['destination_name']} 机票监控看板</h1>
 <p class="update">最近更新: {now}</p>
 <div class="summary">
 <div><b>查询范围:</b> {cfg['date_start']} ~ {cfg['date_end']}（{len(generate_dates(cfg['date_start'], cfg['date_end']))} 天）</div>
@@ -1184,8 +1192,8 @@ a:hover{{text-decoration:underline}}
 
 def main():
     log.info("=" * 50)
-    log.info("开始监控 上海→巴黎 机票")
     cfg = load_config()
+    log.info("开始监控 %s→%s 机票", cfg["origin_name"], cfg["destination_name"])
 
     # 阶段判断：决定本次是否执行查询
     phase, should_run, max_push_per_day = get_current_phase(cfg)
@@ -1311,7 +1319,7 @@ def main():
         # 手动触发无内容 → 推简短状态报告（告诉用户跑完了，不是没动静）
         if is_manual and can_push(push_history, max_push_per_day):
             now = datetime.now().strftime("%Y-%m-%d %H:%M")
-            title = f"上海→巴黎机票监控 手动运行完成（命中0条）"
+            title = f"{cfg['origin_name']}→{cfg['destination_name']}机票监控 手动运行完成（命中0条）"
             dashboard_url = os.environ.get("DASHBOARD_URL", "")
             desp_parts = [
                 f"## ✅ 手动运行完成",
