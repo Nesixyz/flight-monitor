@@ -90,6 +90,8 @@ jobs:
           git commit -m "chore: 更新监控状态 $(date -u +%Y-%m-%dT%H:%M:%SZ)"
           # pull --rebase + 重试，避免并发运行时 push 被拒导致状态丢失
           for i in 1 2 3; do
+            # 清理可能存在的 unstaged changes（如 monitor.log 等），确保 rebase 不被阻塞
+            git checkout -- . 2>/dev/null || true
             if git pull --rebase origin main && git push; then
               echo "提交成功（尝试 $i）"
               exit 0

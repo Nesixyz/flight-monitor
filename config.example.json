@@ -13,9 +13,9 @@
   "query_interval_sec": 12,
   "query_timeout_sec": 30,
   "schedule": {
-    "phase1_end": "2026-08-25",
-    "phase2_end": "2026-09-20",
-    "monitor_end": "2026-10-05"
+    "phase1_end": "2026-08-31",
+    "phase2_end": "2026-09-25",
+    "monitor_end": "2026-10-08"
   },
   "push": {
     "urgent_drop_pct": 5,
