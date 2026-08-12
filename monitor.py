@@ -1315,49 +1315,59 @@ def main():
         log.warning(flyai_warn_line)
 
     has_content = len(all_flights) > 0 or len(gone) > 0
-    if not has_content:
-        # 手动触发无内容 → 推简短状态报告（告诉用户跑完了，不是没动静）
-        if is_manual and can_push(push_history, max_push_per_day):
+    fail_rate = api_fail_total / max(query_count, 1)
+    is_api_abnormal = fail_rate >= 0.5 or query_count == 0  # 失败率≥50%或完全没查询，视为抓取异常
+
+    if has_content:
+        # 有内容（命中航班或消失航班）：正常推送
+        if can_push(push_history, max_push_per_day):
+            title, desp = format_run_message(all_flights, stats, gone, cfg, blocked_dates,
+                                              flyai_warn_line=flyai_warn_line)
+            if send_serverchan(cfg["serverchan_key"], title, desp):
+                record_push(push_history)
+                pushed = True
+                log.info("已推送本次运行结果 (命中%d条, 不再符合%d条)", len(all_flights), len(gone))
+            else:
+                log.warning("推送失败")
+        else:
+            log.info("今日推送已达阶段上限(%d条)，跳过推送", max_push_per_day)
+    elif is_api_abnormal:
+        # 无内容但API异常（失败率高/风控）：推送异常告警，避免用户以为是真的没票
+        if can_push(push_history, max_push_per_day):
             now = datetime.now().strftime("%Y-%m-%d %H:%M")
-            title = f"{cfg['origin_name']}→{cfg['destination_name']}机票监控 手动运行完成（命中0条）"
+            title = f"⚠️ {cfg['origin_name']}→{cfg['destination_name']}机票监控 抓取异常"
             dashboard_url = os.environ.get("DASHBOARD_URL", "")
             desp_parts = [
-                f"## ✅ 手动运行完成",
-                f"_执行时间: {now}_",
+                f"## ⚠️ 抓取异常告警",
+                f"_检测时间: {now}_",
                 "",
-                f"### 📊 执行结果",
+                f"### 📊 异常详情",
                 f"- **查询范围**: {cfg['date_start']} ~ {cfg['date_end']}",
                 f"- **API 调用**: {query_count} 次（失败 {api_fail_total} 次）",
-                f"- **命中航班**: 0 条",
-                f"- **失败率**: {api_fail_total / max(query_count, 1) * 100:.0f}%",
+                f"- **失败率**: {fail_rate * 100:.0f}%",
             ]
             if blocked_dates:
-                desp_parts.append(f"- **风控跳过**: {len(blocked_dates)} 天")
+                desp_parts.append(f"- **风控跳过**: {len(blocked_dates)} 天（触发风控封禁）")
+            if query_count == 0:
+                desp_parts.append("- **⚠️ 0次查询**: 日期轮转或风控导致完全未执行查询")
             if flyai_warn_line:
                 desp_parts.append("")
                 desp_parts.append(flyai_warn_line)
             desp_parts.append("")
+            desp_parts.append("_请检查 flyai_api_key 额度或风控状态，或稍后重试_")
             if dashboard_url:
                 desp_parts.append(f"_在线看板: {dashboard_url}_")
             if send_serverchan(cfg["serverchan_key"], title, "\n".join(desp_parts)):
                 record_push(push_history)
                 pushed = True
-                log.info("已推送手动运行状态报告（命中0条）")
+                log.info("已推送抓取异常告警")
             else:
-                log.warning("手动运行推送失败")
+                log.warning("异常告警推送失败")
         else:
-            log.info("本次无命中航班且无消失航班，不推送（仅更新看板）")
-    elif can_push(push_history, max_push_per_day):
-        title, desp = format_run_message(all_flights, stats, gone, cfg, blocked_dates,
-                                          flyai_warn_line=flyai_warn_line)
-        if send_serverchan(cfg["serverchan_key"], title, desp):
-            record_push(push_history)
-            pushed = True
-            log.info("已推送本次运行结果 (命中%d条, 不再符合%d条)", len(all_flights), len(gone))
-        else:
-            log.warning("推送失败")
+            log.info("今日推送已达阶段上限，跳过异常告警推送")
     else:
-        log.info("今日推送已达阶段上限(%d条)，跳过推送", max_push_per_day)
+        # 抓取正常但0命中（且无消失航班）：不推送，节省额度
+        log.info("抓取正常但0命中，不推送（仅更新看板），失败率: %.0f%%", fail_rate * 100)
 
     save_push_history(push_history)
 
