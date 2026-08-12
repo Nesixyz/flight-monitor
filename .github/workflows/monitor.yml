@@ -13,15 +13,13 @@ on:
   workflow_dispatch:
     inputs:
       manual_run:
-        description: '执行模式（选择"立即执行"会跳过阶段时段检查）'
+        description: '执行模式（选择 true 跳过时段检查，选择 false 按阶段策略执行）'
         required: false
         default: 'true'
         type: choice
         options:
-          - label: '立即执行（跳过时段检查）'
-            value: 'true'
-          - label: '按阶段时段策略决定（不在时段则不执行）'
-            value: 'false'
+          - 'true'
+          - 'false'
 
 permissions:
   contents: write
@@ -70,9 +68,8 @@ jobs:
 
       - name: 运行监控
         env:
-          # 注意：inputs.manual_run 值是字符串，与 'true' 等比较后返回 Boolean，
-          # 传给 env 时会序列化成 "True"/"False" 字符串，所以这里统一用显式 if 输出 "1"/"0"
-          MANUAL_RUN: ${{ github.event.inputs.manual_run == 'true' && '1' || github.event.inputs.manual_run == 'True' && '1' || github.event.inputs.manual_run == '1' && '1' || '0' }}
+          # schedule 触发时 input 为空 → '0'；手动选 'true' → '1'
+          MANUAL_RUN: ${{ github.event.inputs.manual_run == 'true' && '1' || '0' }}
         run: |
           # 调试输出：确认 MANUAL_RUN 值和 manual_run 原始值
           echo "event.inputs.manual_run=${{ github.event.inputs.manual_run }}"
