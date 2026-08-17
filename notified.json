@@ -1,10 +1,1 @@
-{
-  "economy|海湾航空GF018 > 海湾航空GF124|2026-10-08 11:20": {
-    "price": 4841.0,
-    "first_seen": "2026-08-16 18:24:51",
-    "last_notified": "2026-08-16 18:24:51",
-    "seat_category": "economy",
-    "dep_date": "2026-10-08",
-    "miss_count": 2
-  }
-}
+{}
