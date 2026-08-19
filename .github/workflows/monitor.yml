@@ -115,6 +115,10 @@ jobs:
             echo "dashboard.html 不存在（monitor.py 未生成），本次不部署看板，保留上次部署"
           fi
 
+      - name: 配置 GitHub Pages 环境
+        uses: actions/configure-pages@v5
+        if: always() && steps.prepare_dashboard.outputs.has_dashboard == 'true'
+
       - uses: actions/upload-pages-artifact@v3
         if: always() && steps.prepare_dashboard.outputs.has_dashboard == 'true'
         with:
@@ -124,6 +128,9 @@ jobs:
     needs: monitor
     if: always() && needs.monitor.outputs.has_dashboard == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
