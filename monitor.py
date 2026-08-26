@@ -406,8 +406,8 @@ def run_flyai(cfg, dep_date, seat_class, max_price):
 
     不传 --journey-type 参数，让 API 返回直达+中转混合结果，
     由本地代码按 max_transfers 过滤。
-    --journey-type 2 + --sort-type 3(价格升序) 只返回最便宜的 10 条，
-    全是 2 次中转航班，1 次中转被截断。"""
+    --sort-type 4(时长升序) 优先返回最短航班(直达→1次中转→2次中转)，
+    避免 --sort-type 3(价格升序) 只返回最便宜的 2 次中转航班。"""
     env = os.environ.copy()
     if cfg.get("flyai_api_key"):
         env["FLYAI_API_KEY"] = cfg["flyai_api_key"]
@@ -419,7 +419,7 @@ def run_flyai(cfg, dep_date, seat_class, max_price):
         "--destination", cfg["destination"],
         "--dep-date", dep_date,
         "--max-price", str(max_price),
-        "--sort-type", "3",
+        "--sort-type", "4",
     ]
     if seat_class:
         cmd.extend(["--seat-class-name", seat_class])
