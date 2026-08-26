@@ -2,15 +2,15 @@
   "|东航MU554|2026-10-08 13:25": {
     "price": 8898.0,
     "first_seen": "2026-08-26 13:32:02",
-    "last_notified": "2026-08-26 18:37:21",
+    "last_notified": "2026-08-27 00:50:07",
     "seat_category": "economy",
     "dep_date": "2026-10-08",
     "miss_count": 0
   },
   "|法国航空AF1706 > 东航MU214|2026-10-07 15:50": {
-    "price": 7674.0,
+    "price": 7860.0,
     "first_seen": "2026-08-26 15:54:01",
-    "last_notified": "2026-08-26 18:37:21",
+    "last_notified": "2026-08-27 00:50:07",
     "seat_category": "economy",
     "dep_date": "2026-10-07",
     "miss_count": 0
@@ -18,15 +18,15 @@
   "|芬兰航空AY1572 > 吉祥HO1608|2026-10-08 10:45": {
     "price": 9457.0,
     "first_seen": "2026-08-26 15:54:01",
-    "last_notified": "2026-08-26 18:37:21",
+    "last_notified": "2026-08-27 00:50:07",
     "seat_category": "economy",
     "dep_date": "2026-10-08",
     "miss_count": 0
   },
   "|奥地利航空OS362 > 奥地利航空OS015|2026-10-08 09:55": {
-    "price": 8546.0,
+    "price": 8529.0,
     "first_seen": "2026-08-26 15:54:01",
-    "last_notified": "2026-08-26 18:37:21",
+    "last_notified": "2026-08-27 00:50:07",
     "seat_category": "economy",
     "dep_date": "2026-10-08",
     "miss_count": 0
@@ -34,23 +34,23 @@
   "|汉莎航空LH1041 > 国航CA6134|2026-10-08 18:45": {
     "price": 8875.0,
     "first_seen": "2026-08-26 15:54:01",
-    "last_notified": "2026-08-26 18:37:21",
+    "last_notified": "2026-08-27 00:50:07",
     "seat_category": "economy",
     "dep_date": "2026-10-08",
     "miss_count": 0
   },
   "|汉莎航空LH1041 > 汉莎航空LH732|2026-10-08 18:45": {
-    "price": 9598.0,
+    "price": 9597.0,
     "first_seen": "2026-08-26 15:54:01",
-    "last_notified": "2026-08-26 18:37:21",
+    "last_notified": "2026-08-27 00:50:07",
     "seat_category": "economy",
     "dep_date": "2026-10-08",
     "miss_count": 0
   },
   "|布鲁塞尔航空SN3632 > 新海航|海南航空HU7922|2026-10-08 08:30": {
-    "price": 8648.0,
+    "price": 9604.0,
     "first_seen": "2026-08-26 15:54:01",
-    "last_notified": "2026-08-26 18:37:21",
+    "last_notified": "2026-08-27 00:50:07",
     "seat_category": "economy",
     "dep_date": "2026-10-08",
     "miss_count": 0
@@ -58,7 +58,7 @@
   "|国航CA934 > 国航CA1521|2026-10-08 20:20": {
     "price": 9828.0,
     "first_seen": "2026-08-26 15:54:01",
-    "last_notified": "2026-08-26 18:37:21",
+    "last_notified": "2026-08-27 00:50:07",
     "seat_category": "economy",
     "dep_date": "2026-10-08",
     "miss_count": 0
@@ -66,15 +66,15 @@
   "|土耳其航空TK1828 > 土耳其航空TK026|2026-10-08 19:50": {
     "price": 7336.0,
     "first_seen": "2026-08-26 15:54:01",
-    "last_notified": "2026-08-26 15:54:01",
+    "last_notified": "2026-08-27 00:50:07",
     "seat_category": "economy",
     "dep_date": "2026-10-08",
-    "miss_count": 1
+    "miss_count": 0
   },
   "|易捷航空U28410 > 东航MU7364|2026-10-06 19:25": {
-    "price": 9621.0,
+    "price": 9708.0,
     "first_seen": "2026-08-26 18:37:21",
-    "last_notified": "2026-08-26 18:37:21",
+    "last_notified": "2026-08-27 00:50:07",
     "seat_category": "economy",
     "dep_date": "2026-10-06",
     "miss_count": 0
@@ -85,7 +85,7 @@
     "last_notified": "2026-08-26 18:37:21",
     "seat_category": "economy",
     "dep_date": "2026-10-08",
-    "miss_count": 0
+    "miss_count": 1
   },
   "|东航MU570|2026-10-09 21:20": {
     "price": 9919.0,
@@ -93,20 +93,20 @@
     "last_notified": "2026-08-26 18:37:21",
     "seat_category": "economy",
     "dep_date": "2026-10-09",
-    "miss_count": 0
+    "miss_count": 1
   },
   "|东航MU554|2026-10-09 13:25": {
     "price": 7987.0,
     "first_seen": "2026-08-26 18:37:21",
-    "last_notified": "2026-08-26 18:37:21",
+    "last_notified": "2026-08-27 00:50:07",
     "seat_category": "economy",
     "dep_date": "2026-10-09",
     "miss_count": 0
   },
   "|法国航空AF116|2026-10-09 23:30": {
-    "price": 7477.0,
+    "price": 7507.0,
     "first_seen": "2026-08-26 18:37:21",
-    "last_notified": "2026-08-26 18:37:21",
+    "last_notified": "2026-08-27 00:50:07",
     "seat_category": "economy",
     "dep_date": "2026-10-09",
     "miss_count": 0
@@ -114,7 +114,7 @@
   "|布鲁塞尔航空SN3634 > 吉祥HO1660|2026-10-09 09:55": {
     "price": 6967.0,
     "first_seen": "2026-08-26 18:37:21",
-    "last_notified": "2026-08-26 18:37:21",
+    "last_notified": "2026-08-27 00:50:07",
     "seat_category": "economy",
     "dep_date": "2026-10-09",
     "miss_count": 0
@@ -122,23 +122,23 @@
   "|芬兰航空AY1572 > 吉祥HO1608|2026-10-09 10:45": {
     "price": 7747.0,
     "first_seen": "2026-08-26 18:37:21",
-    "last_notified": "2026-08-26 18:37:21",
+    "last_notified": "2026-08-27 00:50:07",
     "seat_category": "economy",
     "dep_date": "2026-10-09",
     "miss_count": 0
   },
   "|奥地利航空OS362 > 奥地利航空OS015|2026-10-09 09:55": {
-    "price": 9528.0,
+    "price": 9509.0,
     "first_seen": "2026-08-26 18:37:21",
-    "last_notified": "2026-08-26 18:37:21",
+    "last_notified": "2026-08-27 00:50:07",
     "seat_category": "economy",
     "dep_date": "2026-10-09",
     "miss_count": 0
   },
   "|法国航空AF1706 > 东航MU214|2026-10-09 15:50": {
-    "price": 6400.0,
+    "price": 6410.0,
     "first_seen": "2026-08-26 18:37:21",
-    "last_notified": "2026-08-26 18:37:21",
+    "last_notified": "2026-08-27 00:50:07",
     "seat_category": "economy",
     "dep_date": "2026-10-09",
     "miss_count": 0
@@ -146,9 +146,17 @@
   "|汉莎航空LH1041 > 汉莎航空LH732|2026-10-09 18:40": {
     "price": 8616.0,
     "first_seen": "2026-08-26 18:37:21",
-    "last_notified": "2026-08-26 18:37:21",
+    "last_notified": "2026-08-27 00:50:07",
     "seat_category": "economy",
     "dep_date": "2026-10-09",
+    "miss_count": 0
+  },
+  "|法国航空AF1706 > 东航MU214|2026-10-06 15:50": {
+    "price": 9951.0,
+    "first_seen": "2026-08-27 00:50:07",
+    "last_notified": "2026-08-27 00:50:07",
+    "seat_category": "economy",
+    "dep_date": "2026-10-06",
     "miss_count": 0
   }
 }
