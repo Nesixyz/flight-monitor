@@ -999,6 +999,7 @@ def format_run_message(all_flights, stats, gone, cfg, blocked_dates, flyai_warn_
         lines.append("")
 
     lines.append("---")
+    lines.append("_⚠️ 显示价格为 API 查询时刻快照价，购票链接打开后为飞猪航线搜索页，实际价格可能不同_")
     dashboard_url = os.environ.get("DASHBOARD_URL", "")
     if dashboard_url:
         lines.append(f"_数据来源: 飞猪 flyai | 在线看板: {dashboard_url}_")
@@ -1059,7 +1060,7 @@ def generate_html(all_flights, stats, gone, cfg, blocked_dates):
   <td class="route">{route_cell}</td>
   <td class="dur">{html.escape(f['total_duration_str'])}</td>
   <td>{change_badge(f)}</td>
-  <td><a href="{url}" target="_blank">购票</a></td>
+  <td><a href="{url}" target="_blank" title="实际价格以飞猪页面为准">购票</a></td>
 </tr>""")
         return """<table>
 <thead><tr><th>出发日期</th><th>类型</th><th>价格</th><th>航班号</th><th>起降</th><th>路线</th><th>总时长</th><th>变化</th><th>操作</th></tr></thead>
@@ -1109,7 +1110,7 @@ def generate_html(all_flights, stats, gone, cfg, blocked_dates):
 <div class="rec-info">{html.escape(f['flight_numbers'])}</div>
 <div class="rec-info">{html.escape(f['dep_airport'])} {dep_t} → {html.escape(f['arr_airport'])} {arr_t}</div>
 {transfer_html}
-<a href="{url}" target="_blank" class="rec-buy">点击购票</a>
+<a href="{url}" target="_blank" class="rec-buy" title="实际价格以飞猪页面为准">点击购票</a>
 </div>""")
     rcfg = cfg.get("recommend", {})
     recommend_html = f"""<div class="recommend">
@@ -1156,9 +1157,11 @@ a:hover{{text-decoration:underline}}
 .rec-info{{font-size:13px;color:#555;margin:3px 0;line-height:1.5}}
 .rec-buy{{display:inline-block;margin-top:8px;padding:6px 16px;background:#1a4fbf;color:#fff!important;border-radius:4px;font-size:13px}}
 .rec-buy:hover{{background:#16409e;text-decoration:none}}
+.price-note{{color:#999;font-size:12px;margin:4px 0 8px 0}}
 </style></head><body>
 <h1>✈️ {cfg['origin_name']} → {cfg['destination_name']} 机票监控看板</h1>
 <p class="update">最近更新: {now}</p>
+<p class="price-note">⚠️ 显示价格为 API 查询时刻的快照价，购票链接打开后为飞猪航线搜索页，实际价格可能因舱位售完或涨价而不同。</p>
 <div class="summary">
 <div><b>查询范围:</b> {cfg['date_start']} ~ {cfg['date_end']}（{len(generate_dates(cfg['date_start'], cfg['date_end']))} 天）</div>
 <div><b>命中航班:</b> 公务舱 {len(business)} 条 / 经济舱 {len(economy)} 条</div>
