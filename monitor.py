@@ -342,38 +342,10 @@ def get_flyai_cmd():
 
 # ---------------- flyai 查询 ----------------
 
-def run_flyai(cfg, dep_date, seat_class, max_price):
-    """调用 flyai search-flight，返回 (itemList, blocked, api_failed)
-    - itemList: 飞猪返回的航班列表，失败时为空列表
-    - blocked: True 表示触发风控(403)，建议停止后续查询
-    - api_failed: True 表示 API 调用本身失败（非0且非"结果为空"），
-                  主流程会累加 fail_count，连续失败达到阈值提前结束
-
-    status 码含义：
-    - status=0: 成功，data.itemList 可能为空
-    - status=1 + message 含"结果为空": 正常无符合条件航班，不算失败
-    - 其他 status: 真错误（额度耗尽/后端维护/参数错误等），算失败
-    """
-    journey_type = "1" if cfg.get("max_transfers", 0) == 0 else "2"
-    cmd = get_flyai_cmd() + [
-        "search-flight",
-        "--origin", cfg["origin"],
-        "--destination", cfg["destination"],
-        "--dep-date", dep_date,
-        "--max-price", str(max_price),
-        "--sort-type", "3",
-        "--journey-type", journey_type,
-    ]
-    # 飞猪 API 忽略 --seat-class-name 参数，但空字符串可能导致报错，仅在非空时传入
-    if seat_class:
-        cmd.extend(["--seat-class-name", seat_class])
-    env = os.environ.copy()
-    if cfg.get("flyai_api_key"):
-        env["FLYAI_API_KEY"] = cfg["flyai_api_key"]
-    timeout = cfg.get("query_timeout_sec", 30)
-    log.info("查询 %s (timeout=%ss)", dep_date, timeout)
+def _call_flyai_once(cmd, env, timeout, dep_date):
+    """执行一次 flyai CLI 调用，返回 (itemList, blocked, api_failed, log_info)
+    log_info: (status, message, item_count) 用于外层判断是否需要降级"""
     try:
-        # start_new_session 创建新进程组，timeout 后可 killpg 强制杀死 node 及子进程
         proc = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
@@ -385,47 +357,104 @@ def run_flyai(cfg, dep_date, seat_class, max_price):
         try:
             stdout_b, stderr_b = proc.communicate(timeout=timeout)
         except subprocess.TimeoutExpired:
-            # 强制杀死整个进程组
             try:
                 os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
             except (ProcessLookupError, PermissionError):
                 pass
             proc.communicate()
             log.warning("flyai 查询超时(已强制终止) %s", dep_date)
-            return [], False, True
+            return [], False, True, ("timeout", "", 0)
         stdout = stdout_b.decode("utf-8", errors="replace") if stdout_b else ""
         stderr = stderr_b.decode("utf-8", errors="replace") if stderr_b else ""
-        # 风控检测
         if "risk control" in stderr or "Abnormal access" in stderr or "403" in stderr:
             log.warning("触发飞猪风控(403): %s", dep_date)
-            return [], True, True
+            return [], True, True, ("blocked", "", 0)
         if proc.returncode != 0:
             log.warning("flyai exit=%s: %s", proc.returncode, stderr[:200])
-            return [], False, True
+            return [], False, True, ("exit_error", stderr[:200], 0)
         data = json.loads(stdout)
         status = str(data.get("status", ""))
         message = data.get("message", "") or ""
         system_msg = data.get("systemMessage", "") or ""
         if status != "0":
-            # 区分"正常无数据"和"真错误"
-            # message 含"结果为空"或"无"等字样视为正常无数据，不算 API 失败
             empty_indicators = ["结果为空", "无数据", "无符合", "暂无"]
             is_empty_result = any(s in message for s in empty_indicators)
             if is_empty_result:
                 log.info("查询成功 %s: 0 条结果（%s）", dep_date, message)
-                return [], False, False
-            # 真错误：打印完整 status/message/systemMessage 便于诊断
+                return [], False, False, (status, message, 0)
             log.warning("flyai API 错误: status=%s message=%s systemMessage=%s", status, message, system_msg)
-            return [], False, True
+            return [], False, True, (status, message, 0)
         items = data.get("data", {}).get("itemList", []) or []
         log.info("查询成功 %s: %d 条结果", dep_date, len(items))
-        return items, False, False
+        if system_msg:
+            log.info("systemMessage %s: %s", dep_date, system_msg)
+        return items, False, False, (status, message, len(items))
     except json.JSONDecodeError as e:
         log.warning("flyai JSON 解析失败 %s: %s", dep_date, e)
-        return [], False, True
+        return [], False, True, ("json_error", str(e), 0)
     except Exception as e:
         log.warning("flyai 查询异常 %s: %s", dep_date, e)
+        return [], False, True, ("exception", str(e), 0)
+
+
+def run_flyai(cfg, dep_date, seat_class, max_price):
+    """调用 flyai search-flight，返回 (itemList, blocked, api_failed)
+    - itemList: 飞猪返回的航班列表，失败时为空列表
+    - blocked: True 表示触发风控(403)，建议停止后续查询
+    - api_failed: True 表示 API 调用本身失败（非0且非"结果为空"），
+                  主流程会累加 fail_count，连续失败达到阈值提前结束
+
+    支持降级策略：
+    - 若设置 max_transfers > 0，先尝试 --journey-type 2
+    - 若返回 API 错误（非空结果），自动降级为 --journey-type 1（仅直飞）
+    - 避免 --journey-type 2 在部分航线上返回空数据导致误判为 API 失败"""
+    max_transfers = cfg.get("max_transfers", 0)
+    use_journey_type_2 = max_transfers > 0
+    env = os.environ.copy()
+    if cfg.get("flyai_api_key"):
+        env["FLYAI_API_KEY"] = cfg["flyai_api_key"]
+    timeout = cfg.get("query_timeout_sec", 30)
+
+    def _build_cmd(jt_value):
+        cmd = get_flyai_cmd() + [
+            "search-flight",
+            "--origin", cfg["origin"],
+            "--destination", cfg["destination"],
+            "--dep-date", dep_date,
+            "--max-price", str(max_price),
+            "--sort-type", "3",
+            "--journey-type", jt_value,
+        ]
+        if seat_class:
+            cmd.extend(["--seat-class-name", seat_class])
+        return cmd
+
+    log.info("查询 %s (timeout=%ss, max_transfers=%d, journey-type=%s)",
+             dep_date, timeout, max_transfers, "2" if use_journey_type_2 else "1")
+
+    if use_journey_type_2:
+        cmd = _build_cmd("2")
+        items, blocked, api_failed, (status, msg, count) = _call_flyai_once(
+            cmd, env, timeout, dep_date)
+        if blocked or not api_failed:
+            return items, blocked, api_failed
+        # API 错误但非风控：降级为直飞重试
+        log.warning("--journey-type 2 查询失败 (status=%s msg=%s)，降级为直飞重试",
+                    status, msg[:100])
+        time.sleep(2)
+        cmd_fallback = _build_cmd("1")
+        items2, blocked2, api_failed2, _ = _call_flyai_once(
+            cmd_fallback, env, timeout, f"{dep_date}(降级直飞)")
+        if not api_failed2:
+            log.info("降级成功: %s 直飞返回 %d 条结果", dep_date, len(items2))
+            return items2, blocked2, False
+        # 降级也失败：返回原始错误
+        log.warning("降级直飞也失败: %s", dep_date)
         return [], False, True
+
+    cmd = _build_cmd("1")
+    items, blocked, api_failed, _ = _call_flyai_once(cmd, env, timeout, dep_date)
+    return items, blocked, api_failed
 
 
 # _parse_dt 支持的格式（按优先级尝试，越常用越靠前）
@@ -662,11 +691,24 @@ def parse_flight(item, seat_category):
 
     base_price = float(item.get("ticketPrice", 0) or 0)
     jump_url_raw = item.get("jumpUrl", "")
-    # 从购票链接跳转提取含税总价（可能因网络/风控失败，兜底用票面价）
     jump_url_short = _extract_jump_url(jump_url_raw)
     total_price = _fetch_total_price(jump_url_short)
+    price_source = "base"
     if total_price is None:
         total_price = base_price
+    elif total_price > 0 and base_price > 0:
+        ratio = total_price / base_price
+        if ratio > 5.0 or ratio < 0.5:
+            log.warning("价格异常: %s 票面¥%.0f 含税¥%.0f 比值%.1f，回退票面价",
+                        flight_numbers, base_price, total_price, ratio)
+            total_price = base_price
+            price_source = "base(fallback)"
+        else:
+            price_source = "total"
+    elif total_price > 0:
+        price_source = "total"
+    log.info("价格: %s 票面¥%.0f 含税¥%.0f (source=%s)",
+             flight_numbers, base_price, total_price, price_source)
 
     return {
         "price": total_price,  # 主价格字段用含税总价
@@ -1317,10 +1359,13 @@ def main():
 
     all_flights = []
     query_count = 0
-    fail_count = 0  # 连续失败计数（风控或API错误都算）
-    api_fail_total = 0  # 本次运行 API 失败总数（用于日志统计）
+    fail_count = 0
+    api_fail_total = 0
     blocked = False
     blocked_dates = []
+    skip_parse = 0
+    skip_transfer = 0
+    skip_price = 0
     for date in all_dates:
         if blocked:
             blocked_dates.append(date)
@@ -1337,24 +1382,31 @@ def main():
                 blocked = True
                 continue
         else:
-            fail_count = 0  # 成功（含正常无数据）则重置计数
+            fail_count = 0
         for item in items:
             f = parse_flight(item, "")
             if not f:
+                skip_parse += 1
                 continue
             if f["transfer_count"] > cfg["max_transfers"]:
+                skip_transfer += 1
+                log.info("剔除(中转超次): %s %s 中转%d次 > max_transfers=%d",
+                         f["dep_date"], f["flight_numbers"],
+                         f["transfer_count"], cfg["max_transfers"])
                 continue
-            # 按实际舱位对应的阈值过滤含税总价
             cat = f["seat_category"]
             cat_max = category_max_price.get(cat, 999999)
             if f["price"] > cat_max:
-                log.info("剔除: %s %s %s 含税¥%.0f 超%s阈值¥%.0f (票面¥%.0f)",
+                skip_price += 1
+                log.info("剔除(超价): %s %s %s 含税¥%.0f > %s阈值¥%.0f (票面¥%.0f)",
                          f["dep_date"], f["flight_numbers"], cat,
                          f["price"], cat, cat_max, f.get("base_price", f["price"]))
                 continue
             all_flights.append(f)
         time.sleep(cfg.get("query_interval_sec", 12))
 
+    log.info("筛选统计: parse失败=%d 中转过滤=%d 超价过滤=%d 命中=%d",
+             skip_parse, skip_transfer, skip_price, len(all_flights))
     log.info("查询完成: %d 次查询, 命中 %d 条符合条件航班, 风控/API失败 %d 次, 跳过 %d 天",
              query_count, len(all_flights), api_fail_total, len(blocked_dates))
     if api_fail_total > 0 and api_fail_total >= query_count * 0.5:
