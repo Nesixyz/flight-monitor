@@ -2,10 +2,10 @@
   "2026-08-25": {
     "run": 2
   },
-  "_meta": {
-    "flyai_calls_total": 328
-  },
   "2026-08-26": {
-    "run": 1
+    "run": 2
+  },
+  "_meta": {
+    "flyai_calls_total": 332
   }
 }
