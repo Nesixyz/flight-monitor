@@ -1,1 +1,26 @@
-{}
+{
+  "business|东航MU554|2026-10-08 13:25": {
+    "price": 6537.0,
+    "first_seen": "2026-08-25 00:40:07",
+    "last_notified": "2026-08-26 12:41:42",
+    "seat_category": "business",
+    "dep_date": "2026-10-08",
+    "miss_count": 0
+  },
+  "business|东航MU570|2026-10-08 21:20": {
+    "price": 7721.0,
+    "first_seen": "2026-08-25 00:40:07",
+    "last_notified": "2026-08-26 12:41:42",
+    "seat_category": "business",
+    "dep_date": "2026-10-08",
+    "miss_count": 0
+  },
+  "business|法国航空AF116|2026-10-08 23:30": {
+    "price": 9423.0,
+    "first_seen": "2026-08-25 00:40:07",
+    "last_notified": "2026-08-26 12:41:42",
+    "seat_category": "business",
+    "dep_date": "2026-10-08",
+    "miss_count": 0
+  }
+}
