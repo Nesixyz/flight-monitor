@@ -495,7 +495,7 @@ def _extract_jump_url(url):
 
 def _fetch_total_price(jump_url):
     """从飞猪购票短链接的跳转 URL 中提取含税总价
-    jumpUrl 短链 302 跳转后的完整 URL 含 fpt 参数，格式如：
+    jumpUrl 短链 302 跳转后的 Location header 含 fpt 参数，格式如：
     fpt=qwen(openclaw)flap(6537)flp(8898)ai2c(sk.clawhub)
     - flap(xxx) = 不含税票面价（= API 的 ticketPrice）
     - flp(xxx)  = 含税总价（= 用户实际购票支付价）
@@ -503,12 +503,20 @@ def _fetch_total_price(jump_url):
     if not jump_url:
         return None
     try:
-        req = urllib.request.Request(jump_url, method="HEAD")
-        req.add_header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)")
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            final_url = resp.geturl()
-        parsed = urllib.parse.urlparse(final_url)
-        params = urllib.parse.parse_qs(parsed.query)
+        import http.client as http_client
+        parsed = urllib.parse.urlparse(jump_url)
+        conn = http_client.HTTPSConnection(parsed.hostname, timeout=10)
+        conn.request("GET", parsed.path + "?" + parsed.query, headers={
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "zh-CN,zh;q=0.9",
+        })
+        resp = conn.getresponse()
+        location = resp.getheader("Location", "")
+        conn.close()
+        if not location:
+            return None
+        params = urllib.parse.parse_qs(urllib.parse.urlparse(location).query)
         fpt = params.get("fpt", [""])[0]
         match = re.search(r"flp\((\d+)\)", fpt)
         if match:
