@@ -36,6 +36,7 @@ import html
 import signal
 import urllib.request
 import urllib.parse
+import re
 import logging
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -491,6 +492,31 @@ def _extract_jump_url(url):
     return url
 
 
+def _fetch_total_price(jump_url):
+    """从飞猪购票短链接的跳转 URL 中提取含税总价
+    jumpUrl 短链 302 跳转后的完整 URL 含 fpt 参数，格式如：
+    fpt=qwen(openclaw)flap(6537)flp(8898)ai2c(sk.clawhub)
+    - flap(xxx) = 不含税票面价（= API 的 ticketPrice）
+    - flp(xxx)  = 含税总价（= 用户实际购票支付价）
+    返回含税总价 float，提取失败返回 None"""
+    if not jump_url:
+        return None
+    try:
+        req = urllib.request.Request(jump_url, method="HEAD")
+        req.add_header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)")
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            final_url = resp.geturl()
+        parsed = urllib.parse.urlparse(final_url)
+        params = urllib.parse.parse_qs(parsed.query)
+        fpt = params.get("fpt", [""])[0]
+        match = re.search(r"flp\((\d+)\)", fpt)
+        if match:
+            return float(match.group(1))
+    except Exception:
+        pass
+    return None
+
+
 def _atomic_write(path, content, encoding="utf-8"):
     """原子写入：先写临时文件，再 os.replace 替换原文件
     避免写入中途异常导致文件损坏"""
@@ -609,8 +635,18 @@ def parse_flight(item, seat_category):
             parts.append(f"{t['city']}（停留{t['stay_str']}，{t['time_window']}）")
         transfer_summary = "；".join(parts)
 
+    base_price = float(item.get("ticketPrice", 0) or 0)
+    jump_url_raw = item.get("jumpUrl", "")
+    # 从购票链接跳转提取含税总价（可能因网络/风控失败，兜底用票面价）
+    jump_url_short = _extract_jump_url(jump_url_raw)
+    total_price = _fetch_total_price(jump_url_short)
+    if total_price is None:
+        total_price = base_price
+
     return {
-        "price": float(item.get("ticketPrice", 0) or 0),
+        "price": total_price,  # 主价格字段用含税总价
+        "base_price": base_price,  # 不含税票面价（保留参考）
+        "total_price": total_price,
         "seat_class": first.get("seatClassName", ""),
         "seat_category": seat_category,
         "is_direct": is_direct,
@@ -629,7 +665,7 @@ def parse_flight(item, seat_category):
         "transfer_duration": transfer_minutes,
         "total_duration": total_minutes,
         "total_duration_str": _fmt_duration_cn(total_minutes),
-        "jump_url": item.get("jumpUrl", ""),
+        "jump_url": jump_url_short,
         # dedupe_key 含 dep_time（精确到分钟）：
         # 同一天同舱位同航班号但不同起飞时刻视为不同行程
         # 避免留学生价/普通价等不同价格条件的航班被错误合并
@@ -999,7 +1035,7 @@ def format_run_message(all_flights, stats, gone, cfg, blocked_dates, flyai_warn_
         lines.append("")
 
     lines.append("---")
-    lines.append("_⚠️ 显示价格为 API 查询时刻快照价，购票链接打开后为飞猪航线搜索页，实际价格可能不同_")
+    lines.append("_⚠️ 价格为含税总价，实际购票价格可能因动态调价而略有不同_")
     dashboard_url = os.environ.get("DASHBOARD_URL", "")
     if dashboard_url:
         lines.append(f"_数据来源: 飞猪 flyai | 在线看板: {dashboard_url}_")
@@ -1161,7 +1197,7 @@ a:hover{{text-decoration:underline}}
 </style></head><body>
 <h1>✈️ {cfg['origin_name']} → {cfg['destination_name']} 机票监控看板</h1>
 <p class="update">最近更新: {now}</p>
-<p class="price-note">⚠️ 显示价格为 API 查询时刻的快照价，购票链接打开后为飞猪航线搜索页，实际价格可能因舱位售完或涨价而不同。</p>
+<p class="price-note">⚠️ 价格为含税总价（API 票面价 + 税费），购票链接打开后为飞猪航班深链，实际价格可能因动态调价而略有不同。</p>
 <div class="summary">
 <div><b>查询范围:</b> {cfg['date_start']} ~ {cfg['date_end']}（{len(generate_dates(cfg['date_start'], cfg['date_end']))} 天）</div>
 <div><b>命中航班:</b> 公务舱 {len(business)} 条 / 经济舱 {len(economy)} 条</div>
@@ -1276,8 +1312,15 @@ def main():
                 f = parse_flight(item, category)
                 if not f:
                     continue
-                if f["transfer_count"] <= cfg["max_transfers"] and f["price"] <= max_price:
-                    all_flights.append(f)
+                if f["transfer_count"] > cfg["max_transfers"]:
+                    continue
+                # 含税总价超预算的航班剔除（API 用不含税票面价预筛，这里二次过滤）
+                if f["price"] > max_price:
+                    log.info("剔除: %s %s 含税¥%.0f 超阈值¥%.0f (票面¥%.0f)",
+                             f["dep_date"], f["flight_numbers"],
+                             f["price"], max_price, f.get("base_price", f["price"]))
+                    continue
+                all_flights.append(f)
             time.sleep(cfg.get("query_interval_sec", 12))
         # 日期切换不再额外 sleep，query_interval_sec 已足够间隔
 
