@@ -1,22 +1,30 @@
 {
-  "origin": "SHA",
-  "destination": "PAR",
-  "date_start": "2026-09-16",
-  "date_end": "2026-10-02",
-  "business_max_price": 13000,
-  "economy_max_price": 5000,
+  "origin": "PAR",
+  "destination": "SHA",
+  "origin_name": "巴黎",
+  "destination_name": "上海",
+  "date_start": "2026-10-06",
+  "date_end": "2026-10-09",
+  "business_max_price": 20000,
+  "economy_max_price": 10000,
   "max_transfers": 1,
-  "serverchan_key": "SCT295396TSifSF9LBkGPsu11ysPYF7g9U",
-  "flyai_api_key": "sk-2JfMTwL1AU_Z-TRodXxPfJQtfWyjb0xP",
+  "serverchan_key": "",
+  "flyai_api_key": "",
   "query_interval_sec": 12,
   "query_timeout_sec": 30,
   "schedule": {
-    "phase1_end": "2026-08-20",
-    "phase2_end": "2026-09-05",
-    "monitor_end": "2026-09-15"
+    "phase1_end": "2026-08-31",
+    "phase2_end": "2026-09-25",
+    "monitor_end": "2026-10-08"
   },
   "push": {
     "urgent_drop_pct": 5,
     "urgent_drop_abs": 500
+  },
+  "recommend": {
+    "business_max_price": 10000,
+    "economy_max_price": 5000,
+    "date_start": "2026-10-06",
+    "date_end": "2026-10-09"
   }
 }

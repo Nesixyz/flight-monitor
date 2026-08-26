@@ -354,6 +354,7 @@ def run_flyai(cfg, dep_date, seat_class, max_price):
     - status=1 + message 含"结果为空": 正常无符合条件航班，不算失败
     - 其他 status: 真错误（额度耗尽/后端维护/参数错误等），算失败
     """
+    journey_type = "1" if cfg.get("max_transfers", 0) == 0 else "2"
     cmd = get_flyai_cmd() + [
         "search-flight",
         "--origin", cfg["origin"],
@@ -361,6 +362,7 @@ def run_flyai(cfg, dep_date, seat_class, max_price):
         "--dep-date", dep_date,
         "--max-price", str(max_price),
         "--sort-type", "3",
+        "--journey-type", journey_type,
     ]
     # 飞猪 API 忽略 --seat-class-name 参数，但空字符串可能导致报错，仅在非空时传入
     if seat_class:

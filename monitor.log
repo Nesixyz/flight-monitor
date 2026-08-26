@@ -1319,3 +1319,12 @@ DOMException [TimeoutError]: The operation was aborted due to timeout
 2026-08-07 11:51:52,616 [INFO] Server酱 推送成功 (尝试 1/2)
 2026-08-07 11:51:52,617 [INFO] 已推送本次运行结果 (命中47条, 消失138条)
 2026-08-07 11:51:52,623 [INFO] 监控结束，看板: /Users/ai-assitant/Documents/Trae/flight-monitor/dashboard.html
+2026-08-12 14:34:45,917 [WARNING] flyai_api_key 未配置，查询将失败！请配置 FLYAI_API_KEY 环境变量或 config.json 字段
+2026-08-12 14:34:45,917 [WARNING] serverchan_key 未配置，将无法推送微信通知
+2026-08-12 14:34:56,156 [WARNING] flyai_api_key 未配置，查询将失败！请配置 FLYAI_API_KEY 环境变量或 config.json 字段
+2026-08-12 14:34:56,156 [WARNING] serverchan_key 未配置，将无法推送微信通知
+2026-08-12 14:34:56,158 [INFO] 已更新本地看板 /Users/ai-assitant/Documents/Trae/flight-monitor/dashboard.html
+2026-08-12 14:35:05,077 [WARNING] flyai_api_key 未配置，查询将失败！请配置 FLYAI_API_KEY 环境变量或 config.json 字段
+2026-08-12 14:35:05,077 [WARNING] serverchan_key 未配置，将无法推送微信通知
+2026-08-12 14:35:15,971 [WARNING] flyai_api_key 未配置，查询将失败！请配置 FLYAI_API_KEY 环境变量或 config.json 字段
+2026-08-12 14:35:15,971 [WARNING] serverchan_key 未配置，将无法推送微信通知
