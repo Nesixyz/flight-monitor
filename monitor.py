@@ -404,55 +404,28 @@ def run_flyai(cfg, dep_date, seat_class, max_price):
     - api_failed: True 表示 API 调用本身失败（非0且非"结果为空"），
                   主流程会累加 fail_count，连续失败达到阈值提前结束
 
-    支持降级策略：
-    - 若设置 max_transfers > 0，先尝试 --journey-type 2
-    - 若返回 API 错误（非空结果），自动降级为 --journey-type 1（仅直飞）
-    - 避免 --journey-type 2 在部分航线上返回空数据导致误判为 API 失败"""
-    max_transfers = cfg.get("max_transfers", 0)
-    use_journey_type_2 = max_transfers > 0
+    不传 --journey-type 参数，让 API 返回直达+中转混合结果，
+    由本地代码按 max_transfers 过滤。
+    --journey-type 2 + --sort-type 3(价格升序) 只返回最便宜的 10 条，
+    全是 2 次中转航班，1 次中转被截断。"""
     env = os.environ.copy()
     if cfg.get("flyai_api_key"):
         env["FLYAI_API_KEY"] = cfg["flyai_api_key"]
     timeout = cfg.get("query_timeout_sec", 30)
 
-    def _build_cmd(jt_value):
-        cmd = get_flyai_cmd() + [
-            "search-flight",
-            "--origin", cfg["origin"],
-            "--destination", cfg["destination"],
-            "--dep-date", dep_date,
-            "--max-price", str(max_price),
-            "--sort-type", "3",
-            "--journey-type", jt_value,
-        ]
-        if seat_class:
-            cmd.extend(["--seat-class-name", seat_class])
-        return cmd
+    cmd = get_flyai_cmd() + [
+        "search-flight",
+        "--origin", cfg["origin"],
+        "--destination", cfg["destination"],
+        "--dep-date", dep_date,
+        "--max-price", str(max_price),
+        "--sort-type", "3",
+    ]
+    if seat_class:
+        cmd.extend(["--seat-class-name", seat_class])
 
-    log.info("查询 %s (timeout=%ss, max_transfers=%d, journey-type=%s)",
-             dep_date, timeout, max_transfers, "2" if use_journey_type_2 else "1")
-
-    if use_journey_type_2:
-        cmd = _build_cmd("2")
-        items, blocked, api_failed, (status, msg, count) = _call_flyai_once(
-            cmd, env, timeout, dep_date)
-        if blocked or not api_failed:
-            return items, blocked, api_failed
-        # API 错误但非风控：降级为直飞重试
-        log.warning("--journey-type 2 查询失败 (status=%s msg=%s)，降级为直飞重试",
-                    status, msg[:100])
-        time.sleep(2)
-        cmd_fallback = _build_cmd("1")
-        items2, blocked2, api_failed2, _ = _call_flyai_once(
-            cmd_fallback, env, timeout, f"{dep_date}(降级直飞)")
-        if not api_failed2:
-            log.info("降级成功: %s 直飞返回 %d 条结果", dep_date, len(items2))
-            return items2, blocked2, False
-        # 降级也失败：返回原始错误
-        log.warning("降级直飞也失败: %s", dep_date)
-        return [], False, True
-
-    cmd = _build_cmd("1")
+    log.info("查询 %s (timeout=%ss, max_transfers=%d)",
+             dep_date, timeout, cfg.get("max_transfers", 0))
     items, blocked, api_failed, _ = _call_flyai_once(cmd, env, timeout, dep_date)
     return items, blocked, api_failed
 
