@@ -1,8 +1,8 @@
 {
   "|法国航空AF1706 > 东航MU214|2026-10-07 15:50": {
-    "price": 7789.0,
+    "price": 8758.0,
     "first_seen": "2026-08-26 15:54:01",
-    "last_notified": "2026-10-02 18:22:04",
+    "last_notified": "2026-10-04 18:27:53",
     "seat_category": "economy",
     "dep_date": "2026-10-07",
     "miss_count": 0
@@ -13,12 +13,12 @@
     "last_notified": "2026-10-02 18:22:04",
     "seat_category": "economy",
     "dep_date": "2026-10-09",
-    "miss_count": 0
+    "miss_count": 1
   },
   "|法国航空AF1704 > 东航MU202|2026-10-08 09:15": {
-    "price": 8162.0,
+    "price": 8264.0,
     "first_seen": "2026-09-15 00:12:50",
-    "last_notified": "2026-10-02 18:22:04",
+    "last_notified": "2026-10-04 18:27:53",
     "seat_category": "economy",
     "dep_date": "2026-10-08",
     "miss_count": 0
@@ -29,12 +29,12 @@
     "last_notified": "2026-10-02 18:22:04",
     "seat_category": "economy",
     "dep_date": "2026-10-09",
-    "miss_count": 0
+    "miss_count": 1
   },
   "|易捷航空U28410 > 东航MU7364|2026-10-08 19:25": {
-    "price": 7371.0,
+    "price": 8335.0,
     "first_seen": "2026-09-22 00:17:25",
-    "last_notified": "2026-10-02 18:22:04",
+    "last_notified": "2026-10-04 18:27:53",
     "seat_category": "economy",
     "dep_date": "2026-10-08",
     "miss_count": 0
@@ -45,20 +45,12 @@
     "last_notified": "2026-10-02 18:22:04",
     "seat_category": "economy",
     "dep_date": "2026-10-08",
-    "miss_count": 0
-  },
-  "|奥地利航空OS362 > 奥地利航空OS015|2026-10-07 09:55": {
-    "price": 7529.0,
-    "first_seen": "2026-09-30 18:20:42",
-    "last_notified": "2026-09-30 18:20:42",
-    "seat_category": "economy",
-    "dep_date": "2026-10-07",
-    "miss_count": 2
+    "miss_count": 1
   },
   "|英国航空BA309 > 东航MU552|2026-10-08 18:35": {
-    "price": 9409.0,
+    "price": 9381.0,
     "first_seen": "2026-09-30 18:20:42",
-    "last_notified": "2026-10-02 18:22:04",
+    "last_notified": "2026-10-04 18:27:53",
     "seat_category": "economy",
     "dep_date": "2026-10-08",
     "miss_count": 0
@@ -69,15 +61,7 @@
     "last_notified": "2026-10-02 18:22:04",
     "seat_category": "economy",
     "dep_date": "2026-10-09",
-    "miss_count": 0
-  },
-  "|法国航空AF112|2026-10-09 14:15": {
-    "price": 9992.0,
-    "first_seen": "2026-09-30 18:20:42",
-    "last_notified": "2026-09-30 18:20:42",
-    "seat_category": "economy",
-    "dep_date": "2026-10-09",
-    "miss_count": 2
+    "miss_count": 1
   },
   "|法国航空AF1618 > 东航MU220|2026-10-08 10:00": {
     "price": 8930.0,
@@ -85,6 +69,6 @@
     "last_notified": "2026-10-02 18:22:04",
     "seat_category": "economy",
     "dep_date": "2026-10-08",
-    "miss_count": 0
+    "miss_count": 1
   }
 }
