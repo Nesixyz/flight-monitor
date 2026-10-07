@@ -5,12 +5,12 @@
     "last_notified": "2026-10-06 06:21:52",
     "seat_category": "economy",
     "dep_date": "2026-10-07",
-    "miss_count": 0
+    "miss_count": 1
   },
   "|法国航空AF1706 > 东航MU214|2026-10-09 15:50": {
-    "price": 8889.0,
+    "price": 8699.0,
     "first_seen": "2026-08-26 18:37:21",
-    "last_notified": "2026-10-06 06:21:52",
+    "last_notified": "2026-10-07 18:54:18",
     "seat_category": "economy",
     "dep_date": "2026-10-09",
     "miss_count": 0
@@ -21,52 +21,28 @@
     "last_notified": "2026-10-06 06:21:52",
     "seat_category": "economy",
     "dep_date": "2026-10-08",
-    "miss_count": 0
+    "miss_count": 1
   },
   "|法国航空AF1704 > 东航MU202|2026-10-09 09:15": {
-    "price": 8347.0,
+    "price": 8525.0,
     "first_seen": "2026-09-15 00:12:50",
-    "last_notified": "2026-10-06 06:21:52",
+    "last_notified": "2026-10-07 18:54:18",
     "seat_category": "economy",
     "dep_date": "2026-10-09",
     "miss_count": 0
   },
   "|易捷航空U28410 > 东航MU7364|2026-10-08 19:25": {
-    "price": 9635.0,
+    "price": 9908.0,
     "first_seen": "2026-09-22 00:17:25",
-    "last_notified": "2026-10-06 06:21:52",
+    "last_notified": "2026-10-07 18:54:18",
     "seat_category": "economy",
     "dep_date": "2026-10-08",
     "miss_count": 0
-  },
-  "|东航MU570|2026-10-08 21:20": {
-    "price": 9788.0,
-    "first_seen": "2026-09-29 18:28:31",
-    "last_notified": "2026-10-02 18:22:04",
-    "seat_category": "economy",
-    "dep_date": "2026-10-08",
-    "miss_count": 2
   },
   "|英国航空BA309 > 东航MU552|2026-10-08 18:35": {
     "price": 9381.0,
     "first_seen": "2026-09-30 18:20:42",
     "last_notified": "2026-10-04 18:27:53",
-    "seat_category": "economy",
-    "dep_date": "2026-10-08",
-    "miss_count": 1
-  },
-  "|东航MU570|2026-10-09 21:20": {
-    "price": 9671.0,
-    "first_seen": "2026-09-30 18:20:42",
-    "last_notified": "2026-10-02 18:22:04",
-    "seat_category": "economy",
-    "dep_date": "2026-10-09",
-    "miss_count": 2
-  },
-  "|法国航空AF1618 > 东航MU220|2026-10-08 10:00": {
-    "price": 8930.0,
-    "first_seen": "2026-10-01 18:46:52",
-    "last_notified": "2026-10-02 18:22:04",
     "seat_category": "economy",
     "dep_date": "2026-10-08",
     "miss_count": 2
@@ -77,6 +53,6 @@
     "last_notified": "2026-10-06 06:21:52",
     "seat_category": "economy",
     "dep_date": "2026-10-09",
-    "miss_count": 0
+    "miss_count": 1
   }
 }
