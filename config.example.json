@@ -1,30 +1,34 @@
 {
   "origin": "PAR",
-  "destination": "SHA",
+  "destination": "TPE",
   "origin_name": "巴黎",
-  "destination_name": "上海",
-  "date_start": "2026-10-06",
-  "date_end": "2026-10-09",
-  "business_max_price": 20000,
-  "economy_max_price": 10000,
+  "destination_name": "台北",
+  "date_start": "2026-12-20",
+  "date_end": "2027-01-04",
+  "return_date_start": "2026-12-26",
+  "return_date_end": "2027-01-10",
+  "min_nights": 5,
+  "max_nights": 9,
+  "business_max_price": 22000,
+  "economy_max_price": 7000,
   "max_transfers": 1,
   "serverchan_key": "",
   "flyai_api_key": "",
   "query_interval_sec": 12,
   "query_timeout_sec": 30,
   "schedule": {
-    "phase1_end": "2026-08-31",
-    "phase2_end": "2026-09-25",
-    "monitor_end": "2026-10-08"
+    "phase1_end": "2026-11-20",
+    "phase2_end": "2026-12-05",
+    "monitor_end": "2026-12-19"
   },
   "push": {
     "urgent_drop_pct": 5,
     "urgent_drop_abs": 500
   },
   "recommend": {
-    "business_max_price": 10000,
-    "economy_max_price": 5000,
-    "date_start": "2026-10-06",
-    "date_end": "2026-10-09"
+    "business_max_price": 18000,
+    "economy_max_price": 5500,
+    "date_start": "2026-12-20",
+    "date_end": "2027-01-10"
   }
 }
