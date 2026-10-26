@@ -1,15 +1,17 @@
 name: 机票价格监控
 
 # ⚠️ 重要：若修改 monitor.py 中的阶段小时集合（phase1_hours / phase2_hours / phase3_hours），
-#   必须同步修改上面的 cron 表达式，否则会出现"触发了但脚本跳过"或"漏触发"。
+#   必须同步修改下面的 cron 表达式，否则会出现"触发了但脚本跳过"或"漏触发"。
 # 对应关系：北京时间 = UTC + 8h
-#   阶段1 {0,12,18} 北京时间  →  UTC {16, 4, 10}  →  cron: '0 4,10,16 * * *'
-#   阶段2 {0,12}    北京时间  →  UTC {16, 4}       →  cron: '0 4,16 * * *'
-#   阶段3 {0,6,12,18} 北京时间  →  UTC {16,22,4,10}  →  cron: '0 4,10,16,22 * * *'
-# 当前 cron 使用阶段3 的4个时间点全集，由脚本内按阶段决定是否执行
+#   阶段1 {12}       北京时间  →  UTC {4}          →  cron: '0 4 * * *'
+#   阶段2 {0,12}     北京时间  →  UTC {16, 4}      →  cron: '0 4,16 * * *'
+#   阶段3 {0,12,18}  北京时间  →  UTC {16, 4, 10}  →  cron: '0 4,10,16 * * *'
+# 当前 cron 使用阶段3 的3个时间点全集，由脚本内按阶段决定是否执行。
+# 注意：脚本允许 cron 延迟 1 小时以内（当前小时或上一小时命中执行时段即可）。
+# 注意：CI 实际使用的配置是 config.example.json（下面 cp 到 config.json），改参数请改它。
 on:
   schedule:
-    - cron: '0 4,10,16,22 * * *'
+    - cron: '0 4,10,16 * * *'
   workflow_dispatch:
     inputs:
       manual_run:
@@ -33,6 +35,7 @@ concurrency:
 jobs:
   monitor:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     outputs:
       has_dashboard: ${{ steps.prepare_dashboard.outputs.has_dashboard }}
     env:
