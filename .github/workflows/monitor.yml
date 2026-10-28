@@ -95,19 +95,15 @@ jobs:
             exit 0
           fi
           git commit -m "chore: 更新监控状态 $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          # pull --rebase + 重试，避免并发运行时 push 被拒导致状态丢失
-          for i in 1 2 3; do
-            # 清理可能存在的 unstaged changes（如 monitor.log 等），确保 rebase 不被阻塞
-            git checkout -- . 2>/dev/null || true
-            if git pull --rebase origin main && git push; then
-              echo "提交成功（尝试 $i）"
-              exit 0
-            fi
-            echo "提交失败（尝试 $i/3），3秒后重试..."
-            sleep 3
-          done
-          echo "⚠️ 状态文件提交失败，本次状态未同步回仓库，下次运行可能重复推送"
-          exit 1
+          # 提交回触发本次 workflow 的分支，不要将 feature branch rebase 到 main。
+          # 并发由 workflow 顶层 concurrency 控制；push 被拒时明确失败，避免破坏分支历史。
+          echo "保存状态到分支: ${GITHUB_REF_NAME}"
+          if git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}"; then
+            echo "状态提交成功"
+          else
+            echo "::error::状态 push 失败；请检查分支更新，不要在 CI 中自动 rebase 到 main"
+            exit 1
+          fi
 
       - name: 准备看板部署目录
         if: always() && steps.run_monitor.outcome == 'success'
