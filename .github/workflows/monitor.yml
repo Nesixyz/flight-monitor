@@ -14,6 +14,15 @@ on:
     - cron: '0 4,10,16 * * *'
   workflow_dispatch:
     inputs:
+      run_mode:
+        description: '运行模式：正常监控或单次 API 诊断'
+        required: true
+        default: 'diagnose'
+        type: choice
+        options:
+          - diagnose
+          - serpapi_diagnose
+          - monitor
       manual_run:
         description: '执行模式（选择 true 跳过时段检查，选择 false 按阶段策略执行）'
         required: false
@@ -43,6 +52,7 @@ jobs:
       SERVERCHAN_KEY: ${{ secrets.SERVERCHAN_KEY }}
       FLYAI_API_KEY: ${{ secrets.FLYAI_API_KEY }}
       DASHBOARD_URL: ${{ vars.DASHBOARD_URL }}
+      SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -69,7 +79,20 @@ jobs:
 
       - run: cp config.example.json config.json
 
+      - name: 回归测试
+        run: python3 -m unittest discover -s tests -v
+
+      - name: 单次 API 诊断（不推送、不更新状态）
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_mode == 'diagnose' }}
+        run: python3 scripts/diagnose_flyai.py
+
+      - name: SerpApi 单次往返诊断（无推送、无状态写入）
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_mode == 'serpapi_diagnose' }}
+        run: python3 scripts/diagnose_serpapi.py
+
       - name: 运行监控
+        if: ${{ github.event_name == 'schedule' || inputs.run_mode == 'monitor' }}
+        id: run_monitor
         env:
           # schedule 触发时 input 为空 → '0'；手动选 'true' → '1'
           MANUAL_RUN: ${{ github.event.inputs.manual_run == 'true' && '1' || '0' }}
@@ -80,8 +103,8 @@ jobs:
           python3 monitor.py
         continue-on-error: true   # 后续看板和状态提交不受监控失败影响
 
-      - name: 提交状态文件回主分支
-        if: always()
+      - name: 提交状态文件回当前分支
+        if: ${{ always() && (github.event_name == 'schedule' || inputs.run_mode == 'monitor') }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -91,22 +114,18 @@ jobs:
             exit 0
           fi
           git commit -m "chore: 更新监控状态 $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          # pull --rebase + 重试，避免并发运行时 push 被拒导致状态丢失
-          for i in 1 2 3; do
-            # 清理可能存在的 unstaged changes（如 monitor.log 等），确保 rebase 不被阻塞
-            git checkout -- . 2>/dev/null || true
-            if git pull --rebase origin main && git push; then
-              echo "提交成功（尝试 $i）"
-              exit 0
-            fi
-            echo "提交失败（尝试 $i/3），3秒后重试..."
-            sleep 3
-          done
-          echo "⚠️ 状态文件提交失败，本次状态未同步回仓库，下次运行可能重复推送"
-          exit 1
+          # 提交回触发本次 workflow 的分支，不要将 feature branch rebase 到 main。
+          # 并发由 workflow 顶层 concurrency 控制；push 被拒时明确失败，避免破坏分支历史。
+          echo "保存状态到分支: ${GITHUB_REF_NAME}"
+          if git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}"; then
+            echo "状态提交成功"
+          else
+            echo "::error::状态 push 失败；请检查分支更新，不要在 CI 中自动 rebase 到 main"
+            exit 1
+          fi
 
       - name: 准备看板部署目录
-        if: always()
+        if: ${{ always() && steps.run_monitor.outcome == 'success' && (github.event_name == 'schedule' || inputs.run_mode == 'monitor') }}
         id: prepare_dashboard
         run: |
           mkdir -p public
@@ -126,6 +145,12 @@ jobs:
         if: always() && steps.prepare_dashboard.outputs.has_dashboard == 'true'
         with:
           path: public
+
+      - name: 将监控失败标记为工作流失败
+        if: always() && steps.run_monitor.outcome == 'failure'
+        run: |
+          echo "::error::monitor.py 执行失败，请检查运行日志"
+          exit 1
 
   deploy-pages:
     needs: monitor
