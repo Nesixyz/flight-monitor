@@ -69,7 +69,11 @@ jobs:
 
       - run: cp config.example.json config.json
 
+      - name: 回归测试
+        run: python3 -m unittest discover -s tests -v
+
       - name: 运行监控
+        id: run_monitor
         env:
           # schedule 触发时 input 为空 → '0'；手动选 'true' → '1'
           MANUAL_RUN: ${{ github.event.inputs.manual_run == 'true' && '1' || '0' }}
@@ -106,7 +110,7 @@ jobs:
           exit 1
 
       - name: 准备看板部署目录
-        if: always()
+        if: always() && steps.run_monitor.outcome == 'success'
         id: prepare_dashboard
         run: |
           mkdir -p public
@@ -140,3 +144,9 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: 将监控失败标记为工作流失败
+        if: always() && steps.run_monitor.outcome == 'failure'
+        run: |
+          echo "::error::monitor.py 执行失败，请检查运行日志"
+          exit 1

@@ -474,9 +474,17 @@ def _fetch_total_price(jump_url):
         return None
     try:
         import http.client as http_client
-        parsed = urllib.parse.urlparse(jump_url)
-        conn = http_client.HTTPSConnection(parsed.hostname, timeout=10)
-        conn.request("GET", parsed.path + "?" + parsed.query, headers={
+        parsed = urllib.parse.urlsplit(jump_url)
+        # The booking URL is supplied by an external API. Never fetch arbitrary hosts.
+        host = (parsed.hostname or "").lower().rstrip(".")
+        trusted_domains = ("taobao.com", "tb.cn", "fliggy.com", "alitrip.com")
+        if (parsed.scheme != "https" or parsed.username or parsed.password
+                or parsed.port not in (None, 443)
+                or not any(host == d or host.endswith("." + d) for d in trusted_domains)):
+            log.warning("拒绝非可信购票 URL host=%s", host)
+            return None
+        conn = http_client.HTTPSConnection(host, timeout=10)
+        conn.request("GET", parsed.path + ("?" + parsed.query if parsed.query else ""), headers={
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Language": "zh-CN,zh;q=0.9",
@@ -654,27 +662,32 @@ def parse_flight(item, direction="outbound"):
 
 
 def apply_total_price(f):
-    """取含税总价并写回 f["price"]；失败/异常时回退票面价"""
+    """只有验证了含税总价才返回 True；否则保留未验证票面价且不得进入低价推荐。"""
     base = f["base_price"]
     total = _fetch_total_price(f["jump_url"])
     source = "base"
     if total is None or total <= 0:
-        total = base
+        f["price_verified"] = False
+        log.warning("无法验证含税价格，跳过航班: %s", f["flight_numbers"])
+        return False
     elif base > 0:
         ratio = total / base
         if ratio > 5.0 or ratio < 0.5:
             log.warning("价格异常: %s 票面¥%.0f 含税¥%.0f 比值%.1f，回退票面价",
                         f["flight_numbers"], base, total, ratio)
-            total = base
-            source = "base(fallback)"
+            f["price_verified"] = False
+            log.warning("无法信任含税价格，跳过航班: %s", f["flight_numbers"])
+            return False
         else:
             source = "total"
     else:
         source = "total"
     f["price"] = total
     f["total_price"] = total
+    f["price_verified"] = True
     log.info("价格: %s %s 票面¥%.0f 含税¥%.0f (source=%s)",
              DIRECTIONS.get(f["direction"], ""), f["flight_numbers"], base, total, source)
+    return True
 
 
 def sort_flights(flights):
@@ -787,7 +800,7 @@ def save_notified(notified):
         log.warning("save_notified 失败: %s", e)
 
 
-def diff_flights(current_flights, notified, unqueried=None):
+def diff_flights(current_flights, notified, unqueried=None, successful_queries=None):
     """对比本次结果与上次记录，给每个航班打变化标签
     返回 (带标签的航班列表, 变化统计dict, 消失航班列表)
     unqueried: 本次未成功查询的 "方向|日期" 集合（风控跳过 + 接口失败/超时），
@@ -796,6 +809,7 @@ def diff_flights(current_flights, notified, unqueried=None):
     stats = {"new": 0, "cheaper": 0, "higher": 0, "unchanged": 0}
     gone = []
     unqueried_set = set(unqueried or [])
+    successful_set = set(successful_queries) if successful_queries is not None else None
 
     current_keys = set()
     for f in current_flights:
@@ -824,7 +838,10 @@ def diff_flights(current_flights, notified, unqueried=None):
             continue
         prev_dep_date = prev.get("dep_date", "")
         prev_dir = prev.get("direction", "outbound")
-        if f"{prev_dir}|{prev_dep_date}" in unqueried_set:
+        query_key = f"{prev_dir}|{prev_dep_date}"
+        # A missing flight is meaningful only after a successful query for its date.
+        # Past/unscheduled dates and API failures must never advance miss_count.
+        if query_key in unqueried_set or (successful_set is not None and query_key not in successful_set):
             continue
         miss_count = prev.get("miss_count", 0) + 1
         prev["miss_count"] = miss_count
@@ -1349,6 +1366,7 @@ def main():
     api_fail_total = 0
     blocked = False
     unqueried = set()          # "方向|日期"：本轮未成功查询（风控跳过/接口失败）
+    successful_queries = set()
     unqueried_labels = []
     skip_parse = skip_transfer = skip_price = 0
 
@@ -1374,6 +1392,7 @@ def main():
                 continue
         else:
             fail_count = 0
+            successful_queries.add(tag)
         for item in items:
             f = parse_flight(item, direction)
             if not f:
@@ -1387,7 +1406,9 @@ def main():
             if f["base_price"] > cat_max:
                 skip_price += 1
                 continue
-            apply_total_price(f)
+            if not apply_total_price(f):
+                skip_price += 1
+                continue
             if f["price"] > cat_max:
                 skip_price += 1
                 log.info("剔除(超价): %s %s %s 含税¥%.0f > ¥%.0f",
@@ -1410,7 +1431,9 @@ def main():
 
     notified = load_notified()
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    all_flights, stats, gone = diff_flights(all_flights, notified, unqueried)
+    all_flights, stats, gone = diff_flights(
+        all_flights, notified, unqueried, successful_queries=successful_queries
+    )
     log.info("变化: 新增%d 降价%d 涨价%d 不变%d 不再符合%d",
              stats["new"], stats["cheaper"], stats["higher"], stats["unchanged"], len(gone))
 
