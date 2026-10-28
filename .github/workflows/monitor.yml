@@ -131,6 +131,12 @@ jobs:
         with:
           path: public
 
+      - name: 将监控失败标记为工作流失败
+        if: always() && steps.run_monitor.outcome == 'failure'
+        run: |
+          echo "::error::monitor.py 执行失败，请检查运行日志"
+          exit 1
+
   deploy-pages:
     needs: monitor
     if: always() && needs.monitor.outputs.has_dashboard == 'true'
@@ -144,9 +150,3 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: 将监控失败标记为工作流失败
-        if: always() && steps.run_monitor.outcome == 'failure'
-        run: |
-          echo "::error::monitor.py 执行失败，请检查运行日志"
-          exit 1
