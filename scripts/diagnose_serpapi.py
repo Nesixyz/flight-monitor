@@ -32,12 +32,11 @@ def diagnose():
         print("ERROR: Missing SERPAPI_API_KEY GitHub Actions secret")
         return 2
     params = dict(PARAMS, api_key=key)
-    # POST form fields to avoid embedding secrets in URLs and CI logs.
+    # SerpApi documents a GET endpoint; never print the URL or exception text
+    # because its query string contains the secret key.
     request = urllib.request.Request(
-        URL,
-        data=urllib.parse.urlencode(params).encode("utf-8"),
-        headers={"Content-Type": "application/x-www-form-urlencoded"},
-        method="POST",
+        URL + "?" + urllib.parse.urlencode(params),
+        method="GET",
     )
     print("Testing Google Flights: CDG -> TPE, Dec 20 to Dec 28, economy, <=1 stop.")
     print("One SerpApi request. No API key, raw body, links, or tokens printed.", flush=True)
