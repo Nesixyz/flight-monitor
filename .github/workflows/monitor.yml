@@ -21,6 +21,7 @@ on:
         type: choice
         options:
           - diagnose
+          - serpapi_diagnose
           - monitor
       manual_run:
         description: '执行模式（选择 true 跳过时段检查，选择 false 按阶段策略执行）'
@@ -51,6 +52,7 @@ jobs:
       SERVERCHAN_KEY: ${{ secrets.SERVERCHAN_KEY }}
       FLYAI_API_KEY: ${{ secrets.FLYAI_API_KEY }}
       DASHBOARD_URL: ${{ vars.DASHBOARD_URL }}
+      SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -83,6 +85,10 @@ jobs:
       - name: 单次 API 诊断（不推送、不更新状态）
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_mode == 'diagnose' }}
         run: python3 scripts/diagnose_flyai.py
+
+      - name: SerpApi 单次往返诊断（无推送、无状态写入）
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_mode == 'serpapi_diagnose' }}
+        run: python3 scripts/diagnose_serpapi.py
 
       - name: 运行监控
         if: ${{ github.event_name == 'schedule' || inputs.run_mode == 'monitor' }}
