@@ -1437,7 +1437,12 @@ def main():
     log.info("变化: 新增%d 降价%d 涨价%d 不变%d 不再符合%d",
              stats["new"], stats["cheaper"], stats["higher"], stats["unchanged"], len(gone))
 
-    generate_html(all_flights, stats, gone, cfg, unqueried_labels)
+    # Do not replace a previously valid dashboard with an empty page after total API failure.
+    all_queries_failed = query_count > 0 and api_fail_total == query_count
+    if all_queries_failed:
+        log.warning("本轮全部 API 请求失败，保留上一次发布的看板")
+    else:
+        generate_html(all_flights, stats, gone, cfg, unqueried_labels)
 
     push_history = load_push_history()
     pushed = False
@@ -1513,6 +1518,8 @@ def main():
     if not pushed:
         log.info("本次未推送微信，仅更新看板与记录")
 
+    if all_queries_failed:
+        raise RuntimeError("全部飞猪 API 查询失败；已记录告警并保留旧看板")
     log.info("监控结束，看板: %s", DASHBOARD_PATH)
 
 
