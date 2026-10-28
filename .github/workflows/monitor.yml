@@ -14,6 +14,14 @@ on:
     - cron: '0 4,10,16 * * *'
   workflow_dispatch:
     inputs:
+      run_mode:
+        description: '运行模式：正常监控或单次 API 诊断'
+        required: true
+        default: 'diagnose'
+        type: choice
+        options:
+          - diagnose
+          - monitor
       manual_run:
         description: '执行模式（选择 true 跳过时段检查，选择 false 按阶段策略执行）'
         required: false
@@ -72,7 +80,12 @@ jobs:
       - name: 回归测试
         run: python3 -m unittest discover -s tests -v
 
+      - name: 单次 API 诊断（不推送、不更新状态）
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_mode == 'diagnose' }}
+        run: python3 scripts/diagnose_flyai.py
+
       - name: 运行监控
+        if: ${{ github.event_name == 'schedule' || inputs.run_mode == 'monitor' }}
         id: run_monitor
         env:
           # schedule 触发时 input 为空 → '0'；手动选 'true' → '1'
@@ -84,8 +97,8 @@ jobs:
           python3 monitor.py
         continue-on-error: true   # 后续看板和状态提交不受监控失败影响
 
-      - name: 提交状态文件回主分支
-        if: always()
+      - name: 提交状态文件回当前分支
+        if: ${{ always() && (github.event_name == 'schedule' || inputs.run_mode == 'monitor') }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -106,7 +119,7 @@ jobs:
           fi
 
       - name: 准备看板部署目录
-        if: always() && steps.run_monitor.outcome == 'success'
+        if: ${{ always() && steps.run_monitor.outcome == 'success' && (github.event_name == 'schedule' || inputs.run_mode == 'monitor') }}
         id: prepare_dashboard
         run: |
           mkdir -p public
