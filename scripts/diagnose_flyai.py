@@ -6,8 +6,9 @@ import sys
 import time
 
 ROUTES = [
-    ("domestic_control", "PVG", "PEK", "2026-12-20"),
-    ("international_target", "CDG", "TPE", "2026-12-20"),
+    ("china_to_taipei", "PVG", "TPE", "2026-12-20"),
+    ("paris_to_shanghai", "CDG", "PVG", "2026-12-20"),
+    ("paris_to_taipei_earlier", "CDG", "TPE", "2026-11-15"),
 ]
 
 def diagnose(label, origin, destination, date):
